@@ -1,0 +1,90 @@
+{
+  "name": "tic-tac-toe-advanced",
+  "description": "Play tic-tac-toe with your friend online.",
+  "version": "0.1.0",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.6.0",
+    "@fortawesome/free-brands-svg-icons": "^6.6.0",
+    "@fortawesome/free-regular-svg-icons": "^6.6.0",
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/react-fontawesome": "^0.2.2",
+    "@gtomato-web/react-hooks": "^2.1.0",
+    "@nextui-org/react": "^2.4.6",
+    "@preact/signals": "^1.2.3",
+    "@preact/signals-react": "^2.0.2",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.18.101",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "classnames": "^2.5.1",
+    "framer-motion": "^11.3.21",
+    "peerjs": "^1.5.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.25.1",
+    "react-scripts": "5.0.1",
+    "tailwindcss": "^3.4.4",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "// ESLint": "---------- ---------- ---------- ---------- ----------",
+    "eslint": "pnpm run prettier:fix; pnpm run eslint:no-glob .",
+    "eslint:no-glob": "eslint --cache --color --config eslint.config.js",
+    "eslint:fix": "pnpm run eslint --fix --quiet",
+    "eslint:fix:no-glob": "pnpm run eslint:no-glob --fix --quiet",
+    "// Prettier": "---------- ---------- ---------- ---------- ----------",
+    "prettier": "pnpm run prettier:base -c",
+    "prettier:base": "pnpm run prettier:base:no-glob './**/*.{?(s)css,html,js,ts,json}'",
+    "prettier:base:no-glob": "prettier --cache --config .prettier.config.js --ignore-path .prettierignore --ignore-unknown",
+    "prettier:fix": "pnpm run prettier:base -w",
+    "prettier:fix:no-glob": "pnpm run prettier:base:no-glob -w",
+    "prepare": "husky",
+    "release": "release-it --config .release-it.json"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.3.0",
+    "@commitlint/config-conventional": "^19.2.2",
+    "@eslint/js": "8",
+    "@release-it/conventional-changelog": "^8.0.1",
+    "@types/eslint__js": "8",
+    "@types/lint-staged": "^13.3.0",
+    "eslint": "8",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-react": "^7.34.3",
+    "globals": "^15.8.0",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.7",
+    "prettier": "^3.3.2",
+    "release-it": "^17.4.1",
+    "typescript": "^4.9.5",
+    "typescript-eslint": "^7.15.0"
+  }
+}

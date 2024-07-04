@@ -1,0 +1,15 @@
+# Node.js / npm / Yarn
+node_modules/
+
+# Backup files
+.composer.bak
+
+# Build output directory
+/coverage
+/build
+/bundle
+/dist
+/out
+
+# Build output files
+.eslintcache
