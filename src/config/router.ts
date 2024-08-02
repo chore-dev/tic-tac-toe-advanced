@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createHashRouter } from 'react-router-dom';
 
 import { ROUTES } from '../constants/routes';
 import Home from '../pages/Home/Home';
@@ -6,7 +6,7 @@ import Host from '../pages/Host/Host';
 import PlayLocal from '../pages/PlayLocal/PlayLocal';
 import PlayOnline from '../pages/PlayOnline/PlayOnline';
 
-export const router = createBrowserRouter([
+export const router = createHashRouter([
   {
     path: ROUTES.Home,
     Component: Home
