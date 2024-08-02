@@ -5,7 +5,7 @@ Play tic-tac-toe with your friend online.
 ## Features
 
 - Basic tic-tac-toe game
-- Advanced game (the oldest move will be demised)
+- Advanced mode (the oldest move will be demised)
 - Peer-to-peer online play
 
 ## How to play
