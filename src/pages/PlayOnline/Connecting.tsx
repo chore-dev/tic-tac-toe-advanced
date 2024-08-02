@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import React, { useEffect } from 'react';
 
 import { bindOnlineModeDataEvents } from '../../helpers/peer';
-import { connected, connection, initializePeer, peer } from '../../store/peer';
+import { connected, connection, error, initializePeer, peer } from '../../store/peer';
 // import styles from './Connecting.module.scss';
 
 /**
@@ -34,6 +34,7 @@ const Connecting: React.FunctionComponent<TProps> = props => {
         const _connection = connection.value || _peer.connect(id);
         connection.value = _connection;
         _connection.on('open', () => {
+          _peer.disconnect();
           connected.value = true;
           bindOnlineModeDataEvents(_connection);
         });
@@ -50,9 +51,16 @@ const Connecting: React.FunctionComponent<TProps> = props => {
       {...otherProps}
     >
       <div className='flex items-center justify-center gap-4 text-2xl'>
-        Connecting... <CircularProgress size='sm' />
+        {!error.value ? (
+          <>
+            Connecting...
+            <CircularProgress size='sm' />
+          </>
+        ) : (
+          <>Connection failed</>
+        )}
       </div>
-      <div className='flex items-center gap-2'>{id}</div>
+      <p>{error.value || id}</p>
     </section>
   );
 };

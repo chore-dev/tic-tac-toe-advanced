@@ -42,6 +42,7 @@ const Host: React.FunctionComponent<TProps> = props => {
     _peer.on('connection', _connection => {
       connection.value = _connection;
       _connection.on('open', () => {
+        _peer.disconnect();
         connected.value = true;
         _connection.send(
           gameActions.init(size.value, mode.value, moves.value, currentPlayer.value)

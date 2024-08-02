@@ -6,7 +6,7 @@ import { generatePath, useNavigate } from 'react-router-dom';
 
 import { ROUTES } from '../../constants/routes';
 import { mode, Mode } from '../../store/game';
-import { connected, connection, hosted, peer } from '../../store/peer';
+import { connected, connection, error, hosted, peer } from '../../store/peer';
 // import styles from './Home.module.scss';
 
 /**
@@ -70,6 +70,7 @@ const Home: React.FunctionComponent<TProps> = props => {
     peer.value = null;
     connection.value = null;
     connected.value = false;
+    error.value = null;
   }, []);
 
   return (
