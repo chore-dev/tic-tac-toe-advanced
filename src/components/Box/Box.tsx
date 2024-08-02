@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import React, { useCallback } from 'react';
 
+import { PLAYER_ICONS } from '../../constants/game';
 import { currentPlayer, RemoveState, winner, type TPlayer, type TPosition } from '../../store/game';
 // import styles from './Box.module.scss';
 
@@ -44,7 +45,7 @@ const Box: React.FunctionComponent<TProps> = props => {
     >
       {typeof removeState !== 'undefined' && removeState !== RemoveState.Removed && (
         <span className={classNames({ 'opacity-30': removeState === RemoveState.RemoveNext })}>
-          {player}
+          {player && PLAYER_ICONS[player]}
         </span>
       )}
     </div>

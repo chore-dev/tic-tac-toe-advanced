@@ -3,6 +3,7 @@ import { useSignals } from '@preact/signals-react/runtime';
 import classNames from 'classnames';
 import React, { useCallback } from 'react';
 
+import { PLAYER_ICONS } from '../../constants/game';
 import { currentPlayer, mode, moves, reset, size, winner } from '../../store/game';
 import Board from '../Board/Board';
 // import styles from './Game.module.scss';
@@ -47,7 +48,7 @@ const Game: React.FunctionComponent<TProps> = props => {
       <section className='flex flex-col items-center gap-2'>
         <Chip>{mode}</Chip>
         {me && <div>You are {me}</div>}
-        <div>{currentPlayer}&#39;s turn</div>
+        <div>{PLAYER_ICONS[currentPlayer.value]}&#39;s turn</div>
       </section>
       <Board
         size={size.value}
@@ -57,7 +58,9 @@ const Game: React.FunctionComponent<TProps> = props => {
       />
       {winner.value && (
         <div className='flex items-center justify-between'>
-          <p className='text-lg'>{winner.value === 'DRAW' ? <>Draw</> : <>{winner} wins!</>}</p>
+          <p className='text-lg'>
+            {winner.value === 'DRAW' ? <>Draw</> : <>{PLAYER_ICONS[winner.value]} wins!</>}
+          </p>
           {(!connected || hosted) && <Button onClick={handleResetButtonClick}>Reset</Button>}
         </div>
       )}
