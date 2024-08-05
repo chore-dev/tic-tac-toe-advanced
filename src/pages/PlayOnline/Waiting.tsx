@@ -62,6 +62,7 @@ const Waiting: React.FunctionComponent<TProps> = props => {
       </div>
       <div className='flex items-center gap-2'>
         {id}
+        {/* @ts-expect-error `window.navigator.share` could be undefined when no HTTPS (e.g. local development) */}
         {window.navigator.share ? (
           <Button
             isIconOnly

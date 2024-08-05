@@ -2,18 +2,24 @@ import classNames from 'classnames';
 import React, { useCallback } from 'react';
 
 import { PLAYER_ICONS } from '../../constants/game';
-import { currentPlayer, RemoveState, winner, type TPlayer, type TPosition } from '../../store/game';
+import {
+  currentPlayer,
+  Mode,
+  RemoveState,
+  type Player,
+  type TMove,
+  type TPosition
+} from '../../store/game';
 // import styles from './Box.module.scss';
 
 /**
  * original props
  */
 interface IProps {
+  move?: TMove;
   position: TPosition;
-  player?: TPlayer;
-  removeState?: RemoveState;
   disabled?: boolean;
-  onClick: (position: TPosition, player: TPlayer) => void;
+  onClick: (position: TPosition, player: Player) => void;
 }
 
 /**
@@ -28,10 +34,13 @@ type TOmitProps = 'onClick';
 type TProps = IProps & Omit<TComponentProps, TOmitProps>;
 
 const Box: React.FunctionComponent<TProps> = props => {
-  const { className, position, player, disabled, removeState, onClick, ...otherProps } = props;
+  const { className, move, position, disabled, onClick, ...otherProps } = props;
+
+  const [player, , meta] = move ?? [];
+  const removeState = meta?.mode === Mode.Infinite ? meta.removeState : undefined;
 
   const handleClick = useCallback(() => {
-    if (!player && !disabled && !winner.value) {
+    if (!player && !disabled) {
       onClick(position, currentPlayer.value);
     }
   }, [position, player, disabled, onClick]);
@@ -43,7 +52,7 @@ const Box: React.FunctionComponent<TProps> = props => {
       role={!disabled ? 'button' : undefined}
       {...otherProps}
     >
-      {typeof removeState !== 'undefined' && removeState !== RemoveState.Removed && (
+      {(typeof removeState === 'undefined' || removeState !== RemoveState.Removed) && (
         <span className={classNames({ 'opacity-30': removeState === RemoveState.RemoveNext })}>
           {player && PLAYER_ICONS[player]}
         </span>

@@ -1,10 +1,12 @@
 import { Button, Chip } from '@nextui-org/react';
+import { effect } from '@preact/signals-react';
 import { useSignals } from '@preact/signals-react/runtime';
 import classNames from 'classnames';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import { PLAYER_ICONS } from '../../constants/game';
-import { currentPlayer, mode, moves, reset, size, winner } from '../../store/game';
+import useAudio from '../../hooks/useAudio';
+import { currentPlayer, mode, moves, reset, size, winner, type Player } from '../../store/game';
 import Board from '../Board/Board';
 // import styles from './Game.module.scss';
 
@@ -12,7 +14,7 @@ import Board from '../Board/Board';
  * original props
  */
 interface IProps {
-  me?: 'O' | 'X';
+  me?: Player;
   hosted?: boolean;
   connected?: boolean;
   disabled?: boolean;
@@ -35,10 +37,28 @@ const Game: React.FunctionComponent<TProps> = props => {
 
   const { className, me, hosted, connected, disabled, onAddMove, onReset, ...otherProps } = props;
 
+  const [playStartAudio] = useAudio(process.env.PUBLIC_URL + '/assets/audio/start.mp3');
+  const [playWinnerAudio] = useAudio(process.env.PUBLIC_URL + '/assets/audio/winner.mp3');
+  const [playDrawAudio] = useAudio(process.env.PUBLIC_URL + '/assets/audio/draw.mp3');
+
   const handleResetButtonClick = useCallback(() => {
     reset();
     onReset?.();
   }, [onReset]);
+
+  effect(() => {
+    if (winner.value) {
+      if (winner.value === 'DRAW') {
+        playDrawAudio();
+      } else {
+        playWinnerAudio();
+      }
+    }
+  });
+
+  useEffect(() => {
+    playStartAudio();
+  }, [playStartAudio]);
 
   return (
     <div

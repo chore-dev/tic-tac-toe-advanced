@@ -2,7 +2,18 @@ import classNames from 'classnames';
 import React, { useCallback, useMemo } from 'react';
 
 import { createMatrix } from '../../helpers/game';
-import { addMove, RemoveState, type TMove, type TPlayer, type TPosition } from '../../store/game';
+import useAudio from '../../hooks/useAudio';
+import {
+  addMove,
+  Mode,
+  mode,
+  RemoveState,
+  winner,
+  type Player,
+  type TMove,
+  type TMoveMeta,
+  type TPosition
+} from '../../store/game';
 import Box from '../Box/Box';
 // import styles from './Board.module.scss';
 
@@ -13,7 +24,7 @@ interface IProps {
   size: number;
   moves: TMove[];
   disabled?: boolean;
-  onAddMove?: (position: TPosition, player: TPlayer) => void;
+  onAddMove?: (position: TPosition, player: Player) => void;
 }
 
 /**
@@ -29,14 +40,24 @@ type TProps = IProps & TComponentProps;
 const Board: React.FunctionComponent<TProps> = props => {
   const { className, size, moves, disabled, onAddMove, ...otherProps } = props;
 
+  const [playAddMoveAudio] = useAudio(process.env.PUBLIC_URL + '/assets/audio/move.mp3');
   const matrix = useMemo(() => createMatrix(size), [size]);
 
   const handleBoxClick: React.ComponentProps<typeof Box>['onClick'] = useCallback(
     (position, player) => {
-      addMove(position, player);
-      onAddMove?.(position, player);
+      if (!winner.value) {
+        const meta = { mode: mode.value } as TMoveMeta;
+        if (meta.mode === Mode.Infinite) {
+          meta.removeState = RemoveState.None;
+        }
+        const winner = addMove(position, player, meta);
+        if (!winner) {
+          playAddMoveAudio();
+        }
+        onAddMove?.(position, player);
+      }
     },
-    [onAddMove]
+    [onAddMove, playAddMoveAudio]
   );
 
   return (
@@ -48,20 +69,25 @@ const Board: React.FunctionComponent<TProps> = props => {
         {matrix.map((row, index) => (
           <tr key={index}>
             {row.map((position, index) => {
-              const move = moves.find(
-                ([[x, y], , removeState]) =>
-                  x === position[0] && y === position[1] && removeState !== RemoveState.Removed
-              );
-              const [, player, removeState] = move ?? [];
+              const move = moves.find(([, [x, y], meta]) => {
+                const matched = x === position[0] && y === position[1];
+                if (meta.mode === Mode.Infinite) {
+                  const { removeState } = meta;
+                  return (
+                    matched &&
+                    (removeState === RemoveState.None || removeState === RemoveState.RemoveNext)
+                  );
+                }
+                return matched;
+              });
               return (
                 <td
                   key={index}
                   className='border border-white'
                 >
                   <Box
+                    move={move}
                     position={position as TPosition}
-                    player={player}
-                    removeState={removeState}
                     disabled={disabled}
                     onClick={handleBoxClick}
                   />

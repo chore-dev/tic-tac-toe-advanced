@@ -6,7 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import * as gameActions from '../../actions/game';
 import Game from '../../components/Game/Game';
 import { ROUTES } from '../../constants/routes';
-import { currentPlayer } from '../../store/game';
+import { currentPlayer, Player } from '../../store/game';
 import { connected, connection, hosted } from '../../store/peer';
 import Connecting from './Connecting';
 import Waiting from './Waiting';
@@ -63,10 +63,12 @@ const PlayOnline: React.FunctionComponent<TProps> = props => {
         </div>
       ) : (
         <Game
-          me={hosted.value ? 'O' : 'X'}
+          me={hosted.value ? Player.O : Player.X}
           hosted={hosted.value}
           connected={connected.value}
-          disabled={hosted.value ? currentPlayer.value !== 'O' : currentPlayer.value !== 'X'}
+          disabled={
+            hosted.value ? currentPlayer.value !== Player.O : currentPlayer.value !== Player.X
+          }
           onAddMove={handleAddMove}
           onReset={handleReset}
         />

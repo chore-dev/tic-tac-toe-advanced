@@ -8,8 +8,8 @@ import {
   moves,
   reset,
   size,
+  type Player,
   type TMove,
-  type TPlayer,
   type TPosition
 } from '../store/game';
 
@@ -20,7 +20,7 @@ type TGameInitData = {
     size: number;
     mode: Mode;
     moves: TMove[];
-    currentPlayer: TPlayer;
+    currentPlayer: Player;
   };
 };
 
@@ -28,7 +28,7 @@ type TGameMoveData = {
   type: 'game:move';
   payload: {
     position: TPosition;
-    player: TPlayer;
+    player: Player;
   };
 };
 
