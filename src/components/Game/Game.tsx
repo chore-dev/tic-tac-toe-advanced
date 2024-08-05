@@ -3,8 +3,10 @@ import { effect } from '@preact/signals-react';
 import { useSignals } from '@preact/signals-react/runtime';
 import classNames from 'classnames';
 import React, { useCallback, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { PLAYER_ICONS } from '../../constants/game';
+import { ROUTES } from '../../constants/routes';
 import useAudio from '../../hooks/useAudio';
 import { currentPlayer, mode, moves, reset, size, winner, type Player } from '../../store/game';
 import Board from '../Board/Board';
@@ -37,9 +39,16 @@ const Game: React.FunctionComponent<TProps> = props => {
 
   const { className, me, hosted, connected, disabled, onAddMove, onReset, ...otherProps } = props;
 
+  const gameover = !connected || hosted;
+
+  const navigate = useNavigate();
   const [playStartAudio] = useAudio(process.env.PUBLIC_URL + '/assets/audio/start.mp3');
   const [playWinnerAudio] = useAudio(process.env.PUBLIC_URL + '/assets/audio/winner.mp3');
   const [playDrawAudio] = useAudio(process.env.PUBLIC_URL + '/assets/audio/draw.mp3');
+
+  const handleBackButtonClick = useCallback(() => {
+    navigate(ROUTES.Home);
+  }, [navigate]);
 
   const handleResetButtonClick = useCallback(() => {
     reset();
@@ -78,10 +87,11 @@ const Game: React.FunctionComponent<TProps> = props => {
       />
       {winner.value && (
         <div className='flex items-center justify-between'>
+          {gameover && <Button onClick={handleBackButtonClick}>Back</Button>}
           <p className='text-lg'>
             {winner.value === 'DRAW' ? <>Draw</> : <>{PLAYER_ICONS[winner.value]} wins!</>}
           </p>
-          {(!connected || hosted) && <Button onClick={handleResetButtonClick}>Reset</Button>}
+          {gameover && <Button onClick={handleResetButtonClick}>Reset</Button>}
         </div>
       )}
     </div>
