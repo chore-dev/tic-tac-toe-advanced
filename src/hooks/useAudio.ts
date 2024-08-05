@@ -1,19 +1,16 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 
 const useAudio = (src: string) => {
-  const audioRef = useRef(new Audio());
+  const audio = new Audio(src);
+  const audioRef = useRef(audio);
 
-  useEffect(() => {
+  const play = useCallback(async () => {
     const audio = audioRef.current;
-    audio.src = src;
-    return () => {
-      audio.remove();
-    };
-  }, [src]);
-
-  const play = useCallback(() => {
-    const audio = audioRef.current;
-    audio.play();
+    try {
+      await audio.play();
+    } catch (err) {
+      // TODO error handling
+    }
   }, []);
 
   const stop = useCallback(() => {
