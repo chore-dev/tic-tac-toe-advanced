@@ -1,4 +1,4 @@
-import { Button, Divider, Input, Radio, RadioGroup } from '@nextui-org/react';
+import { Button, Chip, Divider, Input, Radio, RadioGroup } from '@nextui-org/react';
 import { useSignals } from '@preact/signals-react/runtime';
 import classNames from 'classnames';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -60,7 +60,8 @@ const Home: React.FunctionComponent<TProps> = props => {
 
   const handleJoinButtonClick = useCallback(() => {
     if (remotePeerId) {
-      const path = generatePath(ROUTES.PlayOnline, { id: remotePeerId });
+      const id = encodeURIComponent(remotePeerId);
+      const path = generatePath(ROUTES.PlayOnline, { id });
       navigate(path);
     }
   }, [navigate, remotePeerId]);
@@ -78,12 +79,24 @@ const Home: React.FunctionComponent<TProps> = props => {
       className={classNames(className, 'flex flex-col gap-4')}
       {...otherProps}
     >
+      <div className='flex justify-center'>
+        <h1 className='text-4xl relative'>
+          Tic-Tac-Toe
+          <Chip
+            size='sm'
+            color='primary'
+            className='text-sm absolute right-0 bottom-0 translate-x-1/2 translate-y-3/4 -rotate-12'
+          >
+            Advanced
+          </Chip>
+        </h1>
+      </div>
       <section className='flex flex-col gap-4'>
         <RadioGroup
           label='Mode'
           value={mode.value}
         >
-          {[Mode.Advanced, Mode.Basic].map(_mode => (
+          {[Mode.Classic, Mode.Infinite].map(_mode => (
             <Radio
               key={_mode}
               value={_mode}
@@ -111,14 +124,20 @@ const Home: React.FunctionComponent<TProps> = props => {
         <Button onClick={handleHostButtonClick}>Host a game</Button>
       </section>
       <Divider />
-      <p className='text-lg'>or connect to a host</p>
-      <section className='flex gap-2'>
+      <section className='flex items-end gap-2'>
         <Input
           value={remotePeerId}
+          label='or connect to a host'
+          labelPlacement='outside'
           placeholder='Enter the host ID'
           onChange={handleRemotePeerIdChange}
         />
-        <Button onClick={handleJoinButtonClick}>Join</Button>
+        <Button
+          disabled={!remotePeerId}
+          onClick={handleJoinButtonClick}
+        >
+          Join
+        </Button>
       </section>
     </main>
   );

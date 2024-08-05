@@ -1,11 +1,13 @@
 # Tic-Tac-Toe Advanced
 
-Play tic-tac-toe with your friend online.
+Play a different tic-tac-toe with your friend online.
+
+Idea originated from [GiiKER Tic-Tac-Toe Bolt](https://giiker.com/products/tic-tac-toe-bolt)
 
 ## Features
 
-- Basic tic-tac-toe game
-- Advanced mode (the oldest move will be demised)
+- Classic tic-tac-toe game
+- Infinite mode (only 3 marks can be put)
 - Peer-to-peer online play
 
 ## How to play
@@ -55,6 +57,7 @@ pnpm build
 
 ## TODO
 
+- [ ] Cover-up mode
 - [ ] Support page reloading on host
 
 ## License

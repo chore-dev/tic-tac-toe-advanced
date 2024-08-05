@@ -1,8 +1,8 @@
 import { signal } from '@preact/signals-react';
 
 export enum Mode {
-  Basic = 'Basic',
-  Advanced = 'Advanced'
+  Classic = 'Classic',
+  Infinite = 'Infinite'
 }
 
 export enum RemoveState {
@@ -19,7 +19,7 @@ export type TWinner = TPlayer | 'DRAW';
 
 export const size = signal(3);
 
-export const mode = signal(Mode.Advanced);
+export const mode = signal(Mode.Infinite);
 
 export const moves = signal<TMove[]>([]);
 
@@ -48,7 +48,7 @@ export const addMove = (position: TPosition, player: TPlayer) => {
 };
 
 export const postPlace = () => {
-  if (mode.value === Mode.Advanced) {
+  if (mode.value === Mode.Infinite) {
     if (moves.value.length >= size.value * size.value - size.value) {
       const move = moves.value.find(([, , removeState]) => removeState === RemoveState.None);
       if (move) {
