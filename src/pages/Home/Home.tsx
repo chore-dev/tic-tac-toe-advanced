@@ -5,7 +5,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { generatePath, useNavigate } from 'react-router-dom';
 
 import { ROUTES } from '../../constants/routes';
-import { mode, Mode } from '../../store/game';
+import { mode, Mode, reset } from '../../store/game';
 import { connected, connection, error, hosted, peer } from '../../store/peer';
 // import styles from './Home.module.scss';
 
@@ -67,6 +67,7 @@ const Home: React.FunctionComponent<TProps> = props => {
   }, [navigate, remotePeerId]);
 
   useEffect(() => {
+    reset();
     hosted.value = false;
     peer.value = null;
     connection.value = null;
