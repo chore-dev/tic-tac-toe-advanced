@@ -59,9 +59,11 @@ export const addMove = (
 ) => {
   const move = moves.value.find(([, [x, y], meta]) => {
     const matched = x === position[0] && y === position[1];
-    if (meta.mode === Mode.Infinite) {
-      const { removeState } = meta;
-      return matched && removeState !== RemoveState.Removed;
+    switch (meta.mode) {
+      case Mode.Infinite: {
+        const { removeState } = meta;
+        return matched && removeState !== RemoveState.Removed;
+      }
     }
     return matched;
   });
@@ -116,9 +118,11 @@ const check = () => {
     Array.from<Player>({ length: size.value })
   );
   const _moves = moves.value.filter(([, , meta]) => {
-    if (meta.mode === Mode.Infinite) {
-      const { removeState } = meta;
-      return removeState === RemoveState.None;
+    switch (meta.mode) {
+      case Mode.Infinite: {
+        const { removeState } = meta;
+        return removeState === RemoveState.None;
+      }
     }
     return true;
   });
