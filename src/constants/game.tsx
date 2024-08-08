@@ -8,3 +8,7 @@ export const PLAYER_ICONS = {
   [Player.O]: <FontAwesomeIcon icon={faCircle} />,
   [Player.X]: <FontAwesomeIcon icon={faX} />
 } as const;
+
+export const COVER_UP_MARK_QUANTITY = 2;
+
+export const IS_COVERED_MARKS_DISPLAYED = false;

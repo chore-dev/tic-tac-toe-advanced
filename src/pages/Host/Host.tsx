@@ -1,5 +1,5 @@
-import { CircularProgress } from '@nextui-org/react';
-import React, { useEffect } from 'react';
+import { Button, CircularProgress } from '@nextui-org/react';
+import React, { useCallback, useEffect } from 'react';
 import { generatePath, useNavigate, useSearchParams } from 'react-router-dom';
 
 import * as gameActions from '../../actions/game';
@@ -32,6 +32,10 @@ const Host: React.FunctionComponent<TProps> = props => {
 
   const id = params.get('id');
 
+  const handleCancelButtonClick = useCallback(() => {
+    navigate(ROUTES.Home);
+  }, [navigate]);
+
   useEffect(() => {
     const _peer = initializePeer(id || undefined);
     _peer.on('open', id => {
@@ -60,8 +64,11 @@ const Host: React.FunctionComponent<TProps> = props => {
       className={className}
       {...otherProps}
     >
-      <div className='flex items-center gap-4 text-2xl'>
-        Loading... <CircularProgress size='sm' />
+      <div className='flex flex-col items-center gap-4'>
+        <div className='flex items-center gap-4 text-2xl'>
+          Loading... <CircularProgress size='sm' />
+        </div>
+        <Button onClick={handleCancelButtonClick}>Cancel</Button>
       </div>
     </main>
   );

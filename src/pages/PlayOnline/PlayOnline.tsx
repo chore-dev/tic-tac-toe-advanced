@@ -6,7 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import * as gameActions from '../../actions/game';
 import Game from '../../components/Game/Game';
 import { ROUTES } from '../../constants/routes';
-import { currentPlayer, Player } from '../../store/game';
+import { currentPlayer, Player, winner } from '../../store/game';
 import { connected, connection, hosted } from '../../store/peer';
 import Connecting from './Connecting';
 import Waiting from './Waiting';
@@ -36,9 +36,9 @@ const PlayOnline: React.FunctionComponent<TProps> = props => {
   const { id } = useParams<'id'>();
 
   const handleAddMove: Required<React.ComponentProps<typeof Game>>['onAddMove'] = useCallback(
-    (position, player) => {
+    move => {
       /* send the move to the connected peer */
-      connection.value?.send(gameActions.move(position, player));
+      connection.value?.send(gameActions.addMove(move));
     },
     []
   );
@@ -67,7 +67,8 @@ const PlayOnline: React.FunctionComponent<TProps> = props => {
           hosted={hosted.value}
           connected={connected.value}
           disabled={
-            hosted.value ? currentPlayer.value !== Player.O : currentPlayer.value !== Player.X
+            !!winner.value ||
+            (hosted.value ? currentPlayer.value !== Player.O : currentPlayer.value !== Player.X)
           }
           onAddMove={handleAddMove}
           onReset={handleReset}

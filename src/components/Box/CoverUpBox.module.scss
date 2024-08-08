@@ -1,0 +1,33 @@
+@use 'sass:math';
+
+.move {
+  $max: 3; // number of sizes
+  $spacing: 0.5rem;
+  $min-opacity: 0.5;
+
+  .mark {
+    transition:
+      bottom 0.3s ease-out,
+      left 0.3s ease-out,
+      opacity 0.3s ease-out,
+      transform 0.3s ease-out;
+  }
+
+  &:last-child {
+    .mark {
+      @apply bottom-1/2 left-1/2;
+      @apply -translate-x-1/2 translate-y-1/2;
+    }
+  }
+
+  @for $i from 2 through $max {
+    &:nth-last-child(#{$i}) {
+      $base: $max - $i + 1;
+      .mark {
+        bottom: #{$base * $spacing};
+        left: #{$base * $spacing};
+        opacity: math.min(math.max(math.div($base, $max), $min-opacity), 1);
+      }
+    }
+  }
+}

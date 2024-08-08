@@ -8,6 +8,7 @@ Idea originated from [GiiKER Tic-Tac-Toe Bolt](https://giiker.com/products/tic-t
 
 - Classic tic-tac-toe game
 - Infinite mode (only 3 marks can be put)
+- Cover-up mode (3 sizes of marks, bigger one can cover smaller one)
 - Peer-to-peer online play
 
 ## How to play
@@ -57,7 +58,7 @@ pnpm build
 
 ## TODO
 
-- [ ] Cover-up mode
+- [x] Cover-up mode
 - [ ] Support page reloading on host
 
 ## License

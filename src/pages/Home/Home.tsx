@@ -97,7 +97,7 @@ const Home: React.FunctionComponent<TProps> = props => {
           label='Mode'
           value={mode.value}
         >
-          {[Mode.Classic, Mode.Infinite].map(_mode => (
+          {[Mode.Classic, Mode.Infinite, Mode.CoverUp].map(_mode => (
             <Radio
               key={_mode}
               value={_mode}

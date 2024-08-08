@@ -1,5 +1,7 @@
 import { signal } from '@preact/signals-react';
 
+import { isPlayerSuccess, mapMovesToBoard } from '../helpers/game';
+
 export enum Mode {
   Classic = 'Classic',
   Infinite = 'Infinite',
@@ -7,13 +9,14 @@ export enum Mode {
 }
 
 export enum Player {
+  /** host/first player */
   O = 'O',
   X = 'X'
 }
 
-export enum RemoveState {
+export enum InfiniteMoveStatus {
   None,
-  RemoveNext,
+  RemovingSoon,
   Removed
 }
 
@@ -23,28 +26,30 @@ export enum CoverUpSize {
   Large
 }
 
-/** "O" will be the host player */
-export type TPlayer = Player;
 export type TPosition = [x: number, y: number];
+type TMoveMetaBase = {
+  id: number;
+};
 type TClassicModeMoveMeta = {
   mode: Mode.Classic;
 };
-type TInfiniteModeMoveMeta = {
+export type TInfiniteModeMoveMeta = {
   mode: Mode.Infinite;
-  removeState: RemoveState;
+  status: InfiniteMoveStatus;
 };
-type TCoverUpModeMoveMeta = {
+export type TCoverUpModeMoveMeta = {
   mode: Mode.CoverUp;
-  from: TPosition;
   size: CoverUpSize;
+  from?: number;
 };
 export type TMoveMeta = TClassicModeMoveMeta | TInfiniteModeMoveMeta | TCoverUpModeMoveMeta;
-export type TMove = [player: Player, position: TPosition, meta: TMoveMeta];
+export type TBaseMove = [player: Player, position: TPosition, meta: TMoveMeta];
+export type TMove = [player: Player, position: TPosition, meta: TMoveMetaBase & TMoveMeta];
 export type TWinner = Player | 'DRAW';
 
 export const size = signal(3);
 
-export const mode = signal(Mode.Infinite);
+export const mode = signal(Mode.CoverUp);
 
 export const moves = signal<TMove[]>([]);
 
@@ -52,57 +57,63 @@ export const currentPlayer = signal(Player.O);
 
 export const winner = signal<TWinner | null>(null);
 
-export const addMove = (
-  position: TPosition,
-  player: Player,
-  meta: TMoveMeta = { mode: Mode.Classic }
-) => {
-  const move = moves.value.find(([, [x, y], meta]) => {
-    const matched = x === position[0] && y === position[1];
-    switch (meta.mode) {
-      case Mode.Infinite: {
-        const { removeState } = meta;
-        return matched && removeState !== RemoveState.Removed;
-      }
+/**
+ * @returns the move with id added to the meta
+ */
+export const addMove = (move: TBaseMove) => {
+  const [player, position, meta] = move;
+  const _move: TMove = [
+    player,
+    position,
+    {
+      ...meta,
+      id: moves.value.length + 1
     }
-    return matched;
-  });
-  if (!move) {
-    // add the move if position is not occupied
-    moves.value = [...moves.value, [player, position, meta]];
-  }
+  ];
+  moves.value = [...moves.value, _move];
   // check winner
   const _winner = check();
   if (!_winner) {
-    postPlace();
+    postAddMove();
     togglePlayer();
   } else {
     winner.value = _winner;
   }
-  return _winner;
+  return _move;
 };
 
-export const postPlace = () => {
-  if (mode.value === Mode.Infinite) {
-    if (moves.value.length >= size.value * size.value - size.value) {
-      for (const [, , meta] of moves.value) {
-        if (meta.mode === mode.value) {
-          if (meta.removeState === RemoveState.None) {
-            meta.removeState = RemoveState.RemoveNext;
-            break;
-          }
-        }
-      }
+const postAddMove = () => {
+  switch (mode.value) {
+    case Mode.Classic: {
+      break;
     }
-    if (moves.value.length >= size.value * size.value - size.value + 1) {
-      for (const [, , meta] of moves.value) {
-        if (meta.mode === mode.value) {
-          if (meta.removeState === RemoveState.RemoveNext) {
-            meta.removeState = RemoveState.Removed;
-            break;
+    case Mode.CoverUp: {
+      break;
+    }
+    case Mode.Infinite: {
+      if (moves.value.length >= size.value * size.value - size.value) {
+        // mark the oldest move as `RemovingSoon`
+        for (const [, , meta] of moves.value) {
+          if (meta.mode === mode.value) {
+            if (meta.status === InfiniteMoveStatus.None) {
+              meta.status = InfiniteMoveStatus.RemovingSoon;
+              break;
+            }
           }
         }
       }
+      if (moves.value.length >= size.value * size.value - size.value + 1) {
+        // remove the move marked as `RemovingSoon`
+        for (const [, , meta] of moves.value) {
+          if (meta.mode === mode.value) {
+            if (meta.status === InfiniteMoveStatus.RemovingSoon) {
+              meta.status = InfiniteMoveStatus.Removed;
+              break;
+            }
+          }
+        }
+      }
+      break;
     }
   }
 };
@@ -114,50 +125,43 @@ const togglePlayer = () => {
 };
 
 const check = () => {
-  const matrix = Array.from({ length: size.value }).map(() =>
-    Array.from<Player>({ length: size.value })
-  );
-  const _moves = moves.value.filter(([, , meta]) => {
-    switch (meta.mode) {
-      case Mode.Infinite: {
-        const { removeState } = meta;
-        return removeState === RemoveState.None;
+  const board = mapMovesToBoard(size.value, moves.value);
+
+  const oSuccess = isPlayerSuccess(board, Player.O);
+  const xSuccess = isPlayerSuccess(board, Player.X);
+
+  switch (mode.value) {
+    case Mode.Classic: {
+      if (oSuccess || xSuccess) {
+        const winner = oSuccess ? Player.O : Player.X;
+        return winner;
       }
+      // no winner yet, check if it is a draw game
+      const marks = board.flat().filter(player => player !== null) as Player[];
+      if (marks.length === size.value * size.value) {
+        // all boxes are occupied
+        return 'DRAW';
+      }
+      break;
     }
-    return true;
-  });
-  for (const [player, [x, y]] of _moves) {
-    matrix[x]![y] = player;
-  }
-
-  const checkRow = (row: Player[]) => {
-    return row.every(player => player === Player.X) || row.every(player => player === Player.O);
-  };
-
-  const checkColumn = (matrix: Player[][], column: number) => {
-    return checkRow(matrix.map(row => row[column]!));
-  };
-
-  const checkDiagonal = (matrix: Player[][]) => {
-    const diagonal1 = [] as Player[];
-    const diagonal2 = [] as Player[];
-    for (let i = 0; i < size.value; i++) {
-      diagonal1.push(matrix[i]![i]!);
-      diagonal2.push(matrix[i]![size.value - i - 1]!);
+    case Mode.CoverUp: {
+      if (oSuccess && xSuccess) {
+        // both succeed at the same time
+        return 'DRAW';
+      }
+      if (oSuccess || xSuccess) {
+        const winner = oSuccess ? Player.O : Player.X;
+        return winner;
+      }
+      break;
     }
-    return checkRow(diagonal1) || checkRow(diagonal2);
-  };
-
-  const checkRowsResult = matrix.some(row => checkRow(row));
-  const checkColumnsResult = matrix.some((_, index) => checkColumn(matrix, index));
-  const checkDiagonalsResult = checkDiagonal(matrix);
-
-  if (checkRowsResult || checkColumnsResult || checkDiagonalsResult) {
-    return currentPlayer.value;
-  }
-
-  if (_moves.length === size.value * size.value) {
-    return 'DRAW';
+    case Mode.Infinite: {
+      if (oSuccess || xSuccess) {
+        const winner = oSuccess ? Player.O : Player.X;
+        return winner;
+      }
+      break;
+    }
   }
 
   return null;

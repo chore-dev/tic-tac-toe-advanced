@@ -1,5 +1,5 @@
 import type { TConnectionData } from '../helpers/peer';
-import type { Mode, TMove, TPosition } from '../store/game';
+import type { Mode, TMove } from '../store/game';
 import type { Player } from './../store/game';
 
 export const init = (
@@ -17,11 +17,10 @@ export const init = (
   }
 });
 
-export const move = (position: TPosition, player: Player) => ({
-  type: 'game:move',
+export const addMove = (move: TMove) => ({
+  type: 'game:addMove',
   payload: {
-    position,
-    player
+    move
   }
 });
 

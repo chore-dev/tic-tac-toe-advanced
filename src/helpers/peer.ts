@@ -9,8 +9,7 @@ import {
   reset,
   size,
   type Player,
-  type TMove,
-  type TPosition
+  type TMove
 } from '../store/game';
 
 /** init game config with the host */
@@ -25,10 +24,9 @@ type TGameInitData = {
 };
 
 type TGameMoveData = {
-  type: 'game:move';
+  type: 'game:addMove';
   payload: {
-    position: TPosition;
-    player: Player;
+    move: TMove;
   };
 };
 
@@ -49,9 +47,9 @@ export const bindOnlineModeDataEvents = (connection: DataConnection) => {
         currentPlayer.value = _data.payload.currentPlayer;
         break;
       }
-      case 'game:move': {
-        const { position, player } = _data.payload;
-        addMove(position, player);
+      case 'game:addMove': {
+        const { move } = _data.payload;
+        addMove(move);
         break;
       }
       case 'game:reset': {
