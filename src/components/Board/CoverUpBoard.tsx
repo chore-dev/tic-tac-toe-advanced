@@ -69,6 +69,26 @@ const CoverUpBoard: React.FunctionComponent<TProps> = props => {
     [onAddMove]
   );
 
+  const handleAddMove: React.ComponentProps<typeof CoverUpBox>['onAddMove'] = useCallback(
+    move => {
+      // check if the move is valid
+      const [, position, meta] = move;
+      const activeMove = findActiveMove(moves.value, position);
+      if (activeMove) {
+        const { size } = meta as TCoverUpModeMoveMeta;
+        const [, , activeMoveMeta] = activeMove;
+        const { size: activeMoveSize } = activeMoveMeta as TCoverUpModeMoveMeta;
+        // if there is an active move on the position, the size has to be larger than that
+        if (size > activeMoveSize) {
+          onAddMove(move);
+        }
+        return;
+      }
+      onAddMove(move);
+    },
+    [onAddMove]
+  );
+
   return (
     <DndContext onDragEnd={handleDragEnd}>
       <BaseBoard {...otherProps}>
@@ -77,7 +97,7 @@ const CoverUpBoard: React.FunctionComponent<TProps> = props => {
             className='h-24 w-24'
             disabled={disabled}
             position={position}
-            onAddMove={onAddMove}
+            onAddMove={handleAddMove}
           />
         )}
       </BaseBoard>

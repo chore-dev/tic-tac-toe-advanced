@@ -106,21 +106,19 @@ const CoverUpBox: React.FunctionComponent<TProps> = props => {
 
   const handleClick: Required<React.ComponentProps<typeof Button>>['onClick'] = useCallback(
     event => {
-      if (activeMoves.value.length === 0) {
-        const { size } = event.currentTarget.dataset;
-        const move: TBaseMove = [
-          currentPlayer.value,
-          position,
-          {
-            mode: Mode.CoverUp,
-            size: parseInt(size!) as CoverUpSize
-          }
-        ];
-        onAddMove(move);
-        setIsSelectionBoxOpened(false);
-      }
+      const { size } = event.currentTarget.dataset;
+      const move: TBaseMove = [
+        currentPlayer.value,
+        position,
+        {
+          mode: Mode.CoverUp,
+          size: parseInt(size!) as CoverUpSize
+        }
+      ];
+      onAddMove(move);
+      setIsSelectionBoxOpened(false);
     },
-    [position, onAddMove, activeMoves]
+    [position, onAddMove]
   );
 
   const button = (
@@ -159,7 +157,7 @@ const CoverUpBox: React.FunctionComponent<TProps> = props => {
     </button>
   );
 
-  if (disabled || typeof player !== 'undefined') {
+  if (disabled) {
     return button;
   }
 
