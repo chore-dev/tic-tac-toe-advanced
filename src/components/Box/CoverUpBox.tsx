@@ -141,7 +141,7 @@ const CoverUpBox: React.FunctionComponent<TProps> = props => {
       <PopoverTrigger>
         <button
           ref={setDroppableNodeRef}
-          className={classNames(className, 'relative')}
+          className={classNames(className, 'relative focus-visible:outline-none')}
           disabled={disabled || typeof player !== 'undefined'}
           {...otherProps}
         >
