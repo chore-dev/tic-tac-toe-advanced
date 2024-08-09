@@ -39,10 +39,10 @@ type TComponentProps = React.ComponentPropsWithoutRef<'button'>;
  */
 type TProps = IProps & TComponentProps;
 
-export const MARK_SIZE_CLASSNAMES = {
-  [CoverUpSize.Small]: 'text-xl',
-  [CoverUpSize.Medium]: 'text-3xl',
-  [CoverUpSize.Large]: 'text-5xl'
+const MARK_SIZES = {
+  [CoverUpSize.Small]: 'sm',
+  [CoverUpSize.Medium]: 'md',
+  [CoverUpSize.Large]: 'lg'
 } as const;
 
 const CoverUpBox: React.FunctionComponent<TProps> = props => {
@@ -104,6 +104,16 @@ const CoverUpBox: React.FunctionComponent<TProps> = props => {
     [transform]
   );
 
+  const handlePopoverOpenChange: Required<React.ComponentProps<typeof Popover>>['onOpenChange'] =
+    useCallback(
+      open => {
+        if (!disabled) {
+          setIsSelectionBoxOpened(open);
+        }
+      },
+      [disabled]
+    );
+
   const handleClick: Required<React.ComponentProps<typeof Button>>['onClick'] = useCallback(
     event => {
       const { size } = event.currentTarget.dataset;
@@ -121,54 +131,50 @@ const CoverUpBox: React.FunctionComponent<TProps> = props => {
     [position, onAddMove]
   );
 
-  const button = (
-    <button
-      ref={setDroppableNodeRef}
-      className={classNames(className, 'relative')}
-      disabled={disabled || typeof player !== 'undefined'}
-      {...otherProps}
-    >
-      {displayMoves.map((move, index) => {
-        const [player, , meta] = move;
-        const { size } = meta as TCoverUpModeMoveMeta;
-        return (
-          <div
-            key={index}
-            className={classNames('absolute inset-0', styles.move, {
-              'z-[1]': isDragging
-            })}
-            // only the last one is draggable
-            {...(index === displayMoves.length - 1
-              ? {
-                  ref: setDraggableNodeRef,
-                  style,
-                  ...attributes,
-                  ...listeners
-                }
-              : {})}
-          >
-            <Mark
-              className={classNames('absolute', styles.mark, MARK_SIZE_CLASSNAMES[size])}
-              player={player}
-            />
-          </div>
-        );
-      })}
-    </button>
-  );
-
-  if (disabled) {
-    return button;
-  }
-
   return (
     <Popover
       showArrow
       placement='top'
       isOpen={isSelectionBoxOpened}
-      onOpenChange={setIsSelectionBoxOpened}
+      onOpenChange={handlePopoverOpenChange}
     >
-      <PopoverTrigger>{button}</PopoverTrigger>
+      <PopoverTrigger>
+        <button
+          ref={setDroppableNodeRef}
+          className={classNames(className, 'relative')}
+          disabled={disabled || typeof player !== 'undefined'}
+          {...otherProps}
+        >
+          {displayMoves.map((move, index) => {
+            const [player, , meta] = move;
+            const { size } = meta as TCoverUpModeMoveMeta;
+            return (
+              <div
+                key={index}
+                className={classNames('absolute inset-0', styles.move, {
+                  'z-[1]': isDragging
+                })}
+                // only the last one is draggable
+                {...(index === displayMoves.length - 1
+                  ? {
+                      ref: setDraggableNodeRef,
+                      style,
+                      ...attributes,
+                      ...listeners
+                    }
+                  : {})}
+              >
+                <Mark
+                  className={classNames('absolute', styles.mark)}
+                  size={MARK_SIZES[size]}
+                  player={player}
+                  active={activeMove === moves.value[moves.value.length - 1]}
+                />
+              </div>
+            );
+          })}
+        </button>
+      </PopoverTrigger>
       <PopoverContent>
         <ol className='flex items-center gap-2'>
           {markSizeOptionsMapping.value[currentPlayer.value].map(([size, quantity]) => (
@@ -189,7 +195,7 @@ const CoverUpBox: React.FunctionComponent<TProps> = props => {
                   onClick={handleClick}
                 >
                   <Mark
-                    className={MARK_SIZE_CLASSNAMES[size]}
+                    size={MARK_SIZES[size]}
                     player={currentPlayer.value}
                   />
                 </Button>

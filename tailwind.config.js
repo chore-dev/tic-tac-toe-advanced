@@ -8,7 +8,14 @@ module.exports = {
     './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}'
   ],
   theme: {
-    extend: {}
+    extend: {
+      boxShadow: {
+        glow: '0 0 16px rgba(255, 255, 255, 1)'
+      },
+      dropShadow: {
+        glow: '0 0 8px rgba(255, 255, 255, 1)'
+      }
+    }
   },
   darkMode: 'class',
   plugins: [nextui()]

@@ -1,3 +1,7 @@
+import { faCircleArrowLeft } from '@fortawesome/free-solid-svg-icons/faCircleArrowLeft';
+import { faHandshakeSimple } from '@fortawesome/free-solid-svg-icons/faHandshakeSimple';
+import { faRotateRight } from '@fortawesome/free-solid-svg-icons/faRotateRight';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Chip } from '@nextui-org/react';
 import { useSignalEffect } from '@preact/signals-react';
 import { useSignals } from '@preact/signals-react/runtime';
@@ -5,7 +9,6 @@ import classNames from 'classnames';
 import React, { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { PLAYER_ICONS } from '../../constants/game';
 import { ROUTES } from '../../constants/routes';
 import useAudio from '../../hooks/useAudio';
 import {
@@ -14,15 +17,16 @@ import {
   Mode,
   mode,
   moves,
+  Player,
   reset,
   size,
   winner,
-  type Player,
   type TMove
 } from '../../store/game';
 import ClassicBoard from '../Board/ClassicBoard';
 import CoverUpBoard from '../Board/CoverUpBoard';
 import InfiniteBoard from '../Board/InfiniteBoard';
+import PlayerBox from '../PlayerBox/PlayerBox';
 // import styles from './Game.module.scss';
 
 /**
@@ -110,25 +114,81 @@ const Game: React.FunctionComponent<TProps> = props => {
       className={classNames(className, 'flex flex-col gap-4')}
       {...otherProps}
     >
-      <section className='flex flex-col items-center gap-2'>
-        <Chip>{mode}</Chip>
-        {me && <p>You are {me}</p>}
-        {!winner.value && <p>{PLAYER_ICONS[currentPlayer.value]}&#39;s turn</p>}
+      <section className='flex flex-col items-center gap-4'>
+        <Chip
+          color='primary'
+          size='lg'
+        >
+          {mode}
+        </Chip>
+        <div className='flex items-center gap-4'>
+          <PlayerBox
+            me={me}
+            player={Player.O}
+            active={currentPlayer.value === Player.O}
+            won={winner.value && winner.value === Player.O}
+          />
+          {!winner.value ? (
+            <i className='fas fa-2x fa-swords' />
+          ) : winner.value !== 'DRAW' ? (
+            <i className='fas fa-2x fa-trophy-alt' />
+          ) : (
+            <FontAwesomeIcon
+              size='2x'
+              icon={faHandshakeSimple}
+            />
+          )}
+          {/* <FontAwesomeIcon icon={faHandshakeSimple} /> */}
+          <PlayerBox
+            me={me}
+            player={Player.X}
+            active={currentPlayer.value === Player.X}
+            won={winner.value && winner.value === Player.X}
+          />
+        </div>
       </section>
-      <Board
-        size={size.value}
-        disabled={disabled}
-        onAddMove={handleAddMove}
-      />
-      <div className='flex items-center justify-between'>
-        {(!connected || hosted) && <Button onClick={handleBackButtonClick}>Back</Button>}
-        {winner.value && (
-          <>
-            <p className='text-lg'>
-              {winner.value === 'DRAW' ? <>Draw</> : <>{PLAYER_ICONS[winner.value]} wins!</>}
-            </p>
-            {(!connected || hosted) && <Button onClick={handleResetButtonClick}>Reset</Button>}
-          </>
+      <div className='relative'>
+        <Board
+          className={classNames('transition-opacity duration-300 ease-out', {
+            'opacity-30': !!winner.value
+          })}
+          size={size.value}
+          disabled={disabled}
+          onAddMove={handleAddMove}
+        />
+        {!!winner.value && (!connected || hosted) && (
+          <div
+            className={classNames(
+              'flex items-center gap-4',
+              'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
+            )}
+          >
+            <Button
+              size='lg'
+              startContent={
+                <FontAwesomeIcon
+                  size='2x'
+                  icon={faCircleArrowLeft}
+                />
+              }
+              onClick={handleBackButtonClick}
+            >
+              Back
+            </Button>
+            <Button
+              size='lg'
+              color='primary'
+              startContent={
+                <FontAwesomeIcon
+                  size='2x'
+                  icon={faRotateRight}
+                />
+              }
+              onClick={handleResetButtonClick}
+            >
+              Again
+            </Button>
+          </div>
         )}
       </div>
     </div>

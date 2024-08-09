@@ -42,10 +42,9 @@ export type TCoverUpModeMoveMeta = {
   size: CoverUpSize;
   from?: number;
 };
-export type TMoveMeta = TClassicModeMoveMeta | TInfiniteModeMoveMeta | TCoverUpModeMoveMeta;
+type TMoveMeta = TClassicModeMoveMeta | TInfiniteModeMoveMeta | TCoverUpModeMoveMeta;
 export type TBaseMove = [player: Player, position: TPosition, meta: TMoveMeta];
 export type TMove = [player: Player, position: TPosition, meta: TMoveMetaBase & TMoveMeta];
-export type TWinner = Player | 'DRAW';
 
 export const size = signal(3);
 
@@ -55,7 +54,7 @@ export const moves = signal<TMove[]>([]);
 
 export const currentPlayer = signal(Player.O);
 
-export const winner = signal<TWinner | null>(null);
+export const winner = signal<Player | 'DRAW' | null>(null);
 
 /**
  * @returns the move with id added to the meta

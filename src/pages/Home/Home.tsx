@@ -109,31 +109,42 @@ const Home: React.FunctionComponent<TProps> = props => {
         </RadioGroup>
         {/*
         <Input
-          className="text-black"
           type="number"
           label="Size"
+          labelPlacement='outside'
           min={3}
           max={10}
           step={1}
-          value={`${size.value}`}
-          onChange={handleSizeChange}
+          // value={`${size.value}`}
+          // onChange={handleSizeChange}
         />
         */}
       </section>
       <section className='flex gap-2'>
-        <Button onClick={handlePlayLocalButtonClick}>Local play</Button>
-        <Button onClick={handleHostButtonClick}>Host a game</Button>
+        <Button
+          color='secondary'
+          onClick={handlePlayLocalButtonClick}
+        >
+          Local play
+        </Button>
+        <Button
+          color='primary'
+          onClick={handleHostButtonClick}
+        >
+          Host a game
+        </Button>
       </section>
       <Divider />
       <section className='flex items-end gap-2'>
         <Input
-          value={remotePeerId}
           label='or connect to a host'
           labelPlacement='outside'
           placeholder='Enter the host ID'
+          value={remotePeerId}
           onChange={handleRemotePeerIdChange}
         />
         <Button
+          color='primary'
           disabled={!remotePeerId}
           onClick={handleJoinButtonClick}
         >

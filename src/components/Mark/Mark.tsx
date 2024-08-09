@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React, { forwardRef } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -8,7 +9,9 @@ import { Player } from '../../store/game';
  * original props
  */
 interface IProps {
+  size?: 'sm' | 'md' | 'lg';
   player: Player;
+  active?: boolean;
 }
 
 /**
@@ -26,19 +29,32 @@ const COLOR_CLASSNAMES = {
   [Player.X]: 'text-red-500'
 } as const;
 
+export const SIZE_CLASSNAMES = {
+  sm: 'text-xl',
+  md: 'text-3xl',
+  lg: 'text-5xl'
+} as const;
+
 const Mark = forwardRef<HTMLSpanElement, TProps>((props, ref) => {
-  const { className, player, ...otherProps } = props;
+  const { className, size = 'lg', player, active, ...otherProps } = props;
   return (
     <span
       ref={ref}
       className={twMerge(
-        'inline-flex text-5xl drop-shadow-md',
+        'inline-flex text-5xl',
         COLOR_CLASSNAMES[player],
+        SIZE_CLASSNAMES[size],
         className
       )}
       {...otherProps}
     >
-      {player && PLAYER_ICONS[player]}
+      <i
+        className={classNames('transition-[filter] duration-300 ease-out', {
+          'drop-shadow-glow': active
+        })}
+      >
+        {player && PLAYER_ICONS[player]}
+      </i>
     </span>
   );
 });

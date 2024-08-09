@@ -16,6 +16,7 @@ const config = tsESLint.config(
       'bundle/',
       'dist/',
       'out/',
+      'packages/',
       // Cache files
       '.eslintcache',
       // Config files

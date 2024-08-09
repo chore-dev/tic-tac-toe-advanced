@@ -10,7 +10,8 @@
     "coverage",
     "dist",
     "storybook-static",
-    "out"
+    "out",
+    "packages"
   ],
   "include": ["**/*.d.ts", "**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "@types", "types"],
   "compilerOptions": {

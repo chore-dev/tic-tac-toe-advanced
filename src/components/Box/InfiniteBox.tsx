@@ -68,7 +68,12 @@ const InfiniteBox: React.FunctionComponent<TProps> = props => {
       onClick={handleClick}
       {...otherProps}
     >
-      {player && status !== InfiniteMoveStatus.Removed && <Mark player={player} />}
+      {player && status !== InfiniteMoveStatus.Removed && (
+        <Mark
+          player={player}
+          active={move.value === moves.value[moves.value.length - 1]}
+        />
+      )}
     </button>
   );
 };

@@ -46,7 +46,12 @@ const ClassicBox: React.FunctionComponent<TProps> = props => {
       onClick={handleClick}
       {...otherProps}
     >
-      {player && <Mark player={player} />}
+      {player && (
+        <Mark
+          player={player}
+          active={move.value === moves.value[moves.value.length - 1]}
+        />
+      )}
     </button>
   );
 };

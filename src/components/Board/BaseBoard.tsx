@@ -31,7 +31,8 @@ const BaseBoard: React.FunctionComponent<TProps> = props => {
 
   return (
     <table
-      className={classNames(className, 'border border-white')}
+      className={classNames(className, 'border-r-2 border-b-2 border-white', 'rounded-lg')}
+      border={0}
       {...otherProps}
     >
       <tbody>
@@ -40,7 +41,7 @@ const BaseBoard: React.FunctionComponent<TProps> = props => {
             {row.map((position, index) => (
               <td
                 key={index}
-                className='inline-flex border border-white p-0'
+                className='inline-flex border-t-2 border-l-2 border-white p-0'
               >
                 {children(position)}
               </td>
