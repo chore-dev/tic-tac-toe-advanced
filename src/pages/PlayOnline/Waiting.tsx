@@ -11,9 +11,9 @@ import {
 } from '@nextui-org/react';
 import classNames from 'classnames';
 import React, { useCallback } from 'react';
-import { generatePath } from 'react-router-dom';
+// import { generatePath } from 'react-router-dom';
 
-import { ROUTES } from '../../constants/routes';
+// import { ROUTES } from '../../constants/routes';
 // import styles from './Waiting.module.scss';
 
 /**
@@ -45,12 +45,12 @@ const Waiting: React.FunctionComponent<TProps> = props => {
 
   const handleShareButtonClick = useCallback(async () => {
     try {
-      const url = generatePath(ROUTES.PlayOnline, { id });
-      await window.navigator.share?.({ url });
+      // const url = generatePath(ROUTES.PlayOnline, { id });
+      await window.navigator.share?.({ url: window.location.href });
     } catch (err) {
       // TODO error handling
     }
-  }, [id]);
+  }, []);
 
   return (
     <section
