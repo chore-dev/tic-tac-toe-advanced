@@ -1,26 +1,28 @@
-import { useCallback, useRef } from 'react';
+import useAsyncEffect from '@gtomato-web/react-hooks/lib/core/useAsyncEffect';
+import { useCallback, useMemo, useState } from 'react';
 
 const useAudio = (src: string) => {
-  const audio = new Audio(src);
-  const audioRef = useRef(audio);
+  // use `AudioContext` to avoid delay in iOS Safari
+  const audioContext = useMemo(() => new AudioContext(), []);
+  const [audioBuffer, setAudioBuffer] = useState<AudioBuffer | null>(null);
 
-  const stop = useCallback(() => {
-    const audio = audioRef.current;
-    audio.pause();
-    audio.currentTime = 0;
-  }, []);
+  const ready = audioBuffer !== null;
 
-  const play = useCallback(async () => {
-    const audio = audioRef.current;
-    try {
-      stop();
-      await audio.play();
-    } catch (err) {
-      // TODO error handling
-    }
-  }, [stop]);
+  const play = useCallback(() => {
+    const source = audioContext.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(audioContext.destination);
+    source.start();
+  }, [audioContext, audioBuffer]);
 
-  return [play, stop] as const;
+  useAsyncEffect(async () => {
+    const response = await fetch(src);
+    const arrayBuffer = await response.arrayBuffer();
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+    setAudioBuffer(audioBuffer);
+  }, [src, audioContext]);
+
+  return [ready, play] as const;
 };
 
 export default useAudio;

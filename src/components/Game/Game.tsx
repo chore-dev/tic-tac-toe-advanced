@@ -65,10 +65,10 @@ const Game: React.FunctionComponent<TProps> = props => {
   const Board = BOARD_COMPONENTS[mode.value];
 
   const navigate = useNavigate();
-  const [playStartAudio] = useAudio(process.env.PUBLIC_URL + '/assets/audio/start.mp3');
-  const [playAddMoveAudio] = useAudio(process.env.PUBLIC_URL + '/assets/audio/move.mp3');
-  const [playWinnerAudio] = useAudio(process.env.PUBLIC_URL + '/assets/audio/winner.mp3');
-  const [playDrawAudio] = useAudio(process.env.PUBLIC_URL + '/assets/audio/draw.mp3');
+  const [, playStartAudio] = useAudio(process.env.PUBLIC_URL + '/assets/audio/start.mp3');
+  const [, playAddMoveAudio] = useAudio(process.env.PUBLIC_URL + '/assets/audio/move.mp3');
+  const [, playWinnerAudio] = useAudio(process.env.PUBLIC_URL + '/assets/audio/winner.mp3');
+  const [, playDrawAudio] = useAudio(process.env.PUBLIC_URL + '/assets/audio/draw.mp3');
 
   const handleAddMove: React.ComponentProps<typeof Board>['onAddMove'] = useCallback(
     move => {
