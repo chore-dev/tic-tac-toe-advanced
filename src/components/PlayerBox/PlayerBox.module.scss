@@ -1,0 +1,5 @@
+.box {
+  &.glow {
+    box-shadow: 0 0 16px theme('colors.slate.200');
+  }
+}

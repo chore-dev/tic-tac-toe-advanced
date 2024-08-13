@@ -1,5 +1,4 @@
 import { faCircleArrowLeft } from '@fortawesome/free-solid-svg-icons/faCircleArrowLeft';
-import { faHandshakeSimple } from '@fortawesome/free-solid-svg-icons/faHandshakeSimple';
 import { faRotateRight } from '@fortawesome/free-solid-svg-icons/faRotateRight';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Chip } from '@nextui-org/react';
@@ -10,6 +9,7 @@ import React, { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { ROUTES } from '../../constants/routes';
+import { MODES } from '../../constants/texts';
 import useAudio from '../../hooks/useAudio';
 import {
   addMove,
@@ -27,6 +27,7 @@ import ClassicBoard from '../Board/ClassicBoard';
 import CoverUpBoard from '../Board/CoverUpBoard';
 import InfiniteBoard from '../Board/InfiniteBoard';
 import PlayerBox from '../PlayerBox/PlayerBox';
+import PlayingIcon from '../PlayingIcon/PlayingIcon';
 // import styles from './Game.module.scss';
 
 /**
@@ -111,16 +112,10 @@ const Game: React.FunctionComponent<TProps> = props => {
 
   return (
     <div
-      className={classNames(className, 'flex flex-col gap-4')}
+      className={classNames(className, 'flex flex-col items-center gap-4')}
       {...otherProps}
     >
       <section className='flex flex-col items-center gap-4'>
-        <Chip
-          color='primary'
-          size='lg'
-        >
-          {mode}
-        </Chip>
         <div className='flex items-center gap-4'>
           <PlayerBox
             me={me}
@@ -128,17 +123,7 @@ const Game: React.FunctionComponent<TProps> = props => {
             active={currentPlayer.value === Player.O}
             won={winner.value && winner.value === Player.O}
           />
-          {!winner.value ? (
-            <i className='fas fa-2x fa-swords' />
-          ) : winner.value !== 'DRAW' ? (
-            <i className='fas fa-2x fa-trophy-alt' />
-          ) : (
-            <FontAwesomeIcon
-              size='2x'
-              icon={faHandshakeSimple}
-            />
-          )}
-          {/* <FontAwesomeIcon icon={faHandshakeSimple} /> */}
+          <PlayingIcon winner={winner.value} />
           <PlayerBox
             me={me}
             player={Player.X}
@@ -147,9 +132,9 @@ const Game: React.FunctionComponent<TProps> = props => {
           />
         </div>
       </section>
-      <div className='relative'>
+      <div className='relative flex justify-center'>
         <Board
-          className={classNames('transition-opacity duration-300 ease-out', {
+          className={classNames('transition-opacity duration-500 ease-out', {
             'opacity-30': !!winner.value
           })}
           size={size.value}
@@ -157,12 +142,7 @@ const Game: React.FunctionComponent<TProps> = props => {
           onAddMove={handleAddMove}
         />
         {!!winner.value && (!connected || hosted) && (
-          <div
-            className={classNames(
-              'flex items-center gap-4',
-              'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
-            )}
-          >
+          <div className={classNames('flex items-center gap-4', 'absolute-center')}>
             <Button
               size='lg'
               startContent={
@@ -191,6 +171,12 @@ const Game: React.FunctionComponent<TProps> = props => {
           </div>
         )}
       </div>
+      <Chip
+        color='primary'
+        size='lg'
+      >
+        {MODES[mode.value]}
+      </Chip>
     </div>
   );
 };

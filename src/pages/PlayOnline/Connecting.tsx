@@ -2,6 +2,7 @@ import { CircularProgress } from '@nextui-org/react';
 import classNames from 'classnames';
 import React, { useEffect } from 'react';
 
+import Typography from '../../components/Typography/Typography';
 import { bindOnlineModeDataEvents } from '../../helpers/peer';
 import { connected, connection, error, initializePeer, peer } from '../../store/peer';
 // import styles from './Connecting.module.scss';
@@ -43,24 +44,40 @@ const Connecting: React.FunctionComponent<TProps> = props => {
         });
       });
     }
+    return;
   }, [id]);
 
   return (
     <section
-      className={classNames(className, 'flex flex-col items-center gap-4')}
+      className={classNames(className, 'flex flex-col items-center gap-4 w-full')}
       {...otherProps}
     >
-      <div className='flex items-center justify-center gap-4 text-2xl'>
+      <div className='flex items-center justify-center gap-4 w-full'>
         {!error.value ? (
           <>
-            Connecting...
+            <Typography
+              className='truncate'
+              variant='title2'
+            >
+              Connecting...
+            </Typography>
             <CircularProgress size='sm' />
           </>
         ) : (
-          <>Connection failed</>
+          <Typography
+            className='truncate'
+            variant='title2'
+          >
+            Connection failed
+          </Typography>
         )}
       </div>
-      <p>{error.value || id}</p>
+      <Typography
+        className='text-center truncate w-full'
+        variant='title4'
+      >
+        {error.value || id}
+      </Typography>
     </section>
   );
 };

@@ -3,4 +3,4 @@ export const ROUTES = {
   Host: '/host',
   PlayLocal: '/play',
   PlayOnline: '/play/:id'
-};
+} as const;

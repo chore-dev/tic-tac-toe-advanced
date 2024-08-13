@@ -39,3 +39,13 @@ export const initializePeer = (id?: string) => {
   }
   return peer.value;
 };
+
+export const reset = () => {
+  peer.value?.destroy();
+
+  hosted.value = false;
+  peer.value = null;
+  connection.value = null;
+  connected.value = false;
+  error.value = null;
+};

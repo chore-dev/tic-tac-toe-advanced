@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 
 import { createMatrix } from '../../helpers/game';
 import { type TPosition } from '../../store/game';
-// import styles from './BaseBoard.module.scss';
+import styles from './BaseBoard.module.scss';
 
 /**
  * original props
@@ -30,26 +30,19 @@ const BaseBoard: React.FunctionComponent<TProps> = props => {
   const matrix = useMemo(() => createMatrix(size), [size]);
 
   return (
-    <table
-      className={classNames(className, 'border-r-2 border-b-2 border-white', 'rounded-lg')}
-      border={0}
+    <div
+      className={classNames(className, styles.board, 'shadow-glow')}
       {...otherProps}
     >
-      <tbody>
-        {matrix.map((row, index) => (
-          <tr key={index}>
-            {row.map((position, index) => (
-              <td
-                key={index}
-                className='inline-flex border-t-2 border-l-2 border-white p-0'
-              >
-                {children(position)}
-              </td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
+      {matrix.flat().map((position, index) => (
+        <div
+          key={index}
+          className='flex'
+        >
+          {children(position)}
+        </div>
+      ))}
+    </div>
   );
 };
 

@@ -1,3 +1,4 @@
+import { faCrown } from '@fortawesome/free-solid-svg-icons/faCrown';
 import { faUser } from '@fortawesome/free-solid-svg-icons/faUser';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Badge } from '@nextui-org/react';
@@ -6,7 +7,7 @@ import React from 'react';
 
 import type { Player } from '../../store/game';
 import Mark from '../Mark/Mark';
-// import styles from './Player.module.scss';
+import styles from './PlayerBox.module.scss';
 
 /**
  * original props
@@ -35,7 +36,7 @@ const PlayerBox: React.FunctionComponent<TProps> = props => {
       className='h-6 w-6'
       color='primary'
       shape='circle'
-      isInvisible={me !== player}
+      isInvisible={typeof me === 'undefined' || me !== player}
       content={
         <FontAwesomeIcon
           size='xs'
@@ -46,13 +47,14 @@ const PlayerBox: React.FunctionComponent<TProps> = props => {
       <div
         className={classNames(
           className,
+          styles.box,
           'relative',
           'flex items-center justify-center',
-          'border border-white rounded-lg',
+          'border border-slate-300 rounded-lg',
           'transition-all duration-300 ease-out',
           'h-16 w-16 p-4',
           {
-            'shadow-glow': active,
+            [styles.glow!]: active,
             'opacity-30': won === false,
             'scale-110': won
           }
@@ -63,7 +65,17 @@ const PlayerBox: React.FunctionComponent<TProps> = props => {
           size='md'
           player={player}
           active={active}
+          bounce={false}
         />
+        {won && (
+          <span className={classNames('absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2')}>
+            <FontAwesomeIcon
+              className={classNames('animate-bounce')}
+              size='lg'
+              icon={faCrown}
+            />
+          </span>
+        )}
       </div>
     </Badge>
   );

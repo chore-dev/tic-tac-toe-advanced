@@ -3,6 +3,7 @@ import React, { useCallback, useEffect } from 'react';
 import { generatePath, useNavigate, useSearchParams } from 'react-router-dom';
 
 import * as gameActions from '../../actions/game';
+import Typography from '../../components/Typography/Typography';
 import { ROUTES } from '../../constants/routes';
 import { bindOnlineModeDataEvents } from '../../helpers/peer';
 import { currentPlayer, mode, moves, size } from '../../store/game';
@@ -65,8 +66,9 @@ const Host: React.FunctionComponent<TProps> = props => {
       {...otherProps}
     >
       <div className='flex flex-col items-center gap-4'>
-        <div className='flex items-center gap-4 text-2xl'>
-          Loading... <CircularProgress size='sm' />
+        <div className='flex items-center gap-4'>
+          <Typography variant='title2'>Loading...</Typography>
+          <CircularProgress size='sm' />
         </div>
         <Button onClick={handleCancelButtonClick}>Cancel</Button>
       </div>

@@ -1,0 +1,42 @@
+.mark {
+  @apply transition-[filter] duration-500 ease-out;
+
+  $players: (
+    'O': (
+      theme('colors.cyan.600'),
+      theme('colors.blue.500')
+    ),
+    'X': (
+      theme('colors.rose.600'),
+      theme('colors.red.500')
+    )
+  );
+
+  @each $player, $colors in $players {
+    &[data-player='#{$player}'] {
+      &.active {
+        $outline-color: nth($colors, 1);
+        $shadow-color: nth($colors, 2);
+        filter: drop-shadow(0 0 2px $outline-color) drop-shadow(0 0 4px $shadow-color);
+      }
+    }
+  }
+
+  & {
+    @keyframes bounce {
+      0% {
+        transform: scale(0);
+      }
+      50% {
+        transform: scale(1.5);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    &.bounce {
+      animation: bounce 0.3s ease-in-out;
+    }
+  }
+}

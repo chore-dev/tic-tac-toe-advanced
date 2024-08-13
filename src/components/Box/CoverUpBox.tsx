@@ -150,7 +150,7 @@ const CoverUpBox: React.FunctionComponent<TProps> = props => {
             const { size } = meta as TCoverUpModeMoveMeta;
             return (
               <div
-                key={index}
+                key={`${index}-${size}`}
                 className={classNames('absolute inset-0', styles.move, {
                   'z-[1]': isDragging
                 })}
@@ -197,6 +197,7 @@ const CoverUpBox: React.FunctionComponent<TProps> = props => {
                   <Mark
                     size={MARK_SIZES[size]}
                     player={currentPlayer.value}
+                    bounce={false}
                   />
                 </Button>
               </Badge>

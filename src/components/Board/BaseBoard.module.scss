@@ -1,0 +1,37 @@
+@use 'sass:math';
+
+.board {
+  $border-width: 4px;
+
+  @apply grid grid-cols-3;
+  gap: $border-width;
+  @apply border-4 border-slate-300 rounded-lg;
+  @apply overflow-hidden;
+
+  > div {
+    @apply relative;
+
+    &:before,
+    &:after {
+      content: '';
+      @apply absolute;
+      @apply bg-slate-300;
+    }
+
+    // row borders
+    &:before {
+      inline-size: calc(100% + #{$border-width});
+      block-size: $border-width;
+      inset-inline-start: -#{math.div($border-width, 2)};
+      inset-block-start: -$border-width;
+    }
+
+    // column borders
+    &:after {
+      inline-size: $border-width;
+      block-size: calc(100% + #{$border-width});
+      inset-inline-start: -$border-width;
+      inset-block-start: -#{math.div($border-width, 2)};
+    }
+  }
+}

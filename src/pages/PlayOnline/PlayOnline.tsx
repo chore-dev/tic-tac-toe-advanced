@@ -1,5 +1,6 @@
 import { Button } from '@nextui-org/react';
 import { useSignals } from '@preact/signals-react/runtime';
+import classNames from 'classnames';
 import React, { useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -53,7 +54,7 @@ const PlayOnline: React.FunctionComponent<TProps> = props => {
 
   return (
     <main
-      className={className}
+      className={classNames(className, 'w-full')}
       {...otherProps}
     >
       {!connected.value ? (

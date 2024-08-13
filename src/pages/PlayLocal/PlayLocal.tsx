@@ -1,4 +1,5 @@
 import { useSignals } from '@preact/signals-react/runtime';
+import classNames from 'classnames';
 import React from 'react';
 
 import Game from '../../components/Game/Game';
@@ -25,7 +26,7 @@ const PlayLocal: React.FunctionComponent<TProps> = props => {
   const { className, ...otherProps } = props;
   return (
     <main
-      className={className}
+      className={classNames(className, 'w-full')}
       {...otherProps}
     >
       <Game disabled={!!winner.value} />

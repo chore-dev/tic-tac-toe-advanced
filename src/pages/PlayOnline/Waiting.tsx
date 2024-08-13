@@ -11,8 +11,9 @@ import {
 } from '@nextui-org/react';
 import classNames from 'classnames';
 import React, { useCallback } from 'react';
-// import { generatePath } from 'react-router-dom';
 
+import Typography from '../../components/Typography/Typography';
+// import { generatePath } from 'react-router-dom';
 // import { ROUTES } from '../../constants/routes';
 // import styles from './Waiting.module.scss';
 
@@ -39,8 +40,12 @@ const Waiting: React.FunctionComponent<TProps> = props => {
 
   const [copy] = useClipboard();
 
-  const handleCopyButtonClick = useCallback(() => {
-    copy(id);
+  const handleCopyButtonClick = useCallback(async () => {
+    try {
+      await copy(id);
+    } catch (err) {
+      // TODO error handling
+    }
   }, [id, copy]);
 
   const handleShareButtonClick = useCallback(async () => {
@@ -54,14 +59,25 @@ const Waiting: React.FunctionComponent<TProps> = props => {
 
   return (
     <section
-      className={classNames(className, 'flex flex-col items-center gap-4')}
+      className={classNames(className, 'flex flex-col items-center gap-4 w-full')}
       {...otherProps}
     >
-      <div className='flex items-center justify-center gap-4 text-2xl'>
-        Waiting for connection... <CircularProgress size='sm' />
+      <div className='flex items-center justify-center gap-4 w-full'>
+        <Typography
+          className='shrink truncate'
+          variant='title2'
+        >
+          Waiting for connection...
+        </Typography>
+        <CircularProgress size='sm' />
       </div>
-      <div className='flex items-center gap-2'>
-        {id}
+      <div className='flex items-center justify-center gap-2 w-full'>
+        <Typography
+          className='truncate'
+          variant='title4'
+        >
+          {id}
+        </Typography>
         {/* @ts-expect-error `window.navigator.share` could be undefined when no HTTPS (e.g. local development) */}
         {window.navigator.share ? (
           <Button

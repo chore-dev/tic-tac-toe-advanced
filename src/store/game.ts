@@ -3,9 +3,9 @@ import { signal } from '@preact/signals-react';
 import { isPlayerSuccess, mapMovesToBoard } from '../helpers/game';
 
 export enum Mode {
-  Classic = 'Classic',
-  Infinite = 'Infinite',
-  CoverUp = 'Cover-up'
+  Classic,
+  Infinite,
+  CoverUp
 }
 
 export enum Player {
@@ -45,16 +45,17 @@ export type TCoverUpModeMoveMeta = {
 type TMoveMeta = TClassicModeMoveMeta | TInfiniteModeMoveMeta | TCoverUpModeMoveMeta;
 export type TBaseMove = [player: Player, position: TPosition, meta: TMoveMeta];
 export type TMove = [player: Player, position: TPosition, meta: TMoveMetaBase & TMoveMeta];
+export type TWinner = Player | 'DRAW' | null;
 
 export const size = signal(3);
 
-export const mode = signal(Mode.CoverUp);
+export const mode = signal(Mode.Classic);
 
 export const moves = signal<TMove[]>([]);
 
 export const currentPlayer = signal(Player.O);
 
-export const winner = signal<Player | 'DRAW' | null>(null);
+export const winner = signal<TWinner>(null);
 
 /**
  * @returns the move with id added to the meta

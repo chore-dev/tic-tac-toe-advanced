@@ -4,6 +4,7 @@ import { twMerge } from 'tailwind-merge';
 
 import { PLAYER_ICONS } from '../../constants/game';
 import { Player } from '../../store/game';
+import styles from './Mark.module.scss';
 
 /**
  * original props
@@ -12,6 +13,7 @@ interface IProps {
   size?: 'sm' | 'md' | 'lg';
   player: Player;
   active?: boolean;
+  bounce?: boolean;
 }
 
 /**
@@ -36,22 +38,19 @@ export const SIZE_CLASSNAMES = {
 } as const;
 
 const Mark = forwardRef<HTMLSpanElement, TProps>((props, ref) => {
-  const { className, size = 'lg', player, active, ...otherProps } = props;
+  const { className, size = 'lg', player, active, bounce = true, ...otherProps } = props;
   return (
     <span
       ref={ref}
-      className={twMerge(
-        'inline-flex text-5xl',
-        COLOR_CLASSNAMES[player],
-        SIZE_CLASSNAMES[size],
-        className
-      )}
+      className={twMerge('inline-flex', SIZE_CLASSNAMES[size], className)}
       {...otherProps}
     >
       <i
-        className={classNames('transition-[filter] duration-300 ease-out', {
-          'drop-shadow-glow': active
+        className={classNames(styles.mark, COLOR_CLASSNAMES[player], {
+          [styles.active!]: active,
+          [styles.bounce!]: bounce
         })}
+        data-player={player}
       >
         {player && PLAYER_ICONS[player]}
       </i>

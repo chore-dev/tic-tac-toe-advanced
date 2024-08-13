@@ -1,4 +1,5 @@
 const { nextui } = require('@nextui-org/react');
+// const defaultTheme = require('tailwindcss/defaultTheme');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -10,10 +11,7 @@ module.exports = {
   theme: {
     extend: {
       boxShadow: {
-        glow: '0 0 16px rgba(255, 255, 255, 1)'
-      },
-      dropShadow: {
-        glow: '0 0 8px rgba(255, 255, 255, 1)'
+        glow: '0 0 16px theme("colors.slate.200")'
       }
     }
   },
