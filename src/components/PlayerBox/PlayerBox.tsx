@@ -33,7 +33,7 @@ const PlayerBox: React.FunctionComponent<TProps> = props => {
   const { className, me, player, active, won, ...otherProps } = props;
   return (
     <Badge
-      className='h-6 w-6'
+      className={classNames('size-6', { 'opacity-30': won === false })}
       color='primary'
       shape='circle'
       isInvisible={typeof me === 'undefined' || me !== player}
