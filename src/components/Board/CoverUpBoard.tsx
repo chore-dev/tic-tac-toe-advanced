@@ -94,7 +94,7 @@ const CoverUpBoard: React.FunctionComponent<TProps> = props => {
       <BaseBoard {...otherProps}>
         {position => (
           <CoverUpBox
-            className='h-24 w-24'
+            className='size-24'
             disabled={disabled}
             position={position}
             onAddMove={handleAddMove}

@@ -30,7 +30,7 @@ const InfiniteBoard: React.FunctionComponent<TProps> = props => {
     <BaseBoard {...otherProps}>
       {position => (
         <InfiniteBox
-          className='h-24 w-24'
+          className='size-24'
           disabled={disabled}
           position={position}
           onAddMove={onAddMove}

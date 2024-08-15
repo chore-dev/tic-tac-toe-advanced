@@ -52,7 +52,7 @@ const PlayerBox: React.FunctionComponent<TProps> = props => {
           'flex items-center justify-center',
           'border border-slate-300 rounded-lg',
           'transition-all duration-300 ease-out',
-          'h-16 w-16 p-4',
+          'size-16 p-4',
           {
             [styles.glow!]: active,
             'opacity-30': won === false,
