@@ -4,11 +4,12 @@ import { useSignals } from '@preact/signals-react/runtime';
 import classNames from 'classnames';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { generatePath, useNavigate } from 'react-router-dom';
-import Divider from '../../components/Divider/Divider';
 
+import Divider from '../../components/Divider/Divider';
 import Typography from '../../components/Typography/Typography';
 import { ROUTES } from '../../constants/routes';
 import { MODES } from '../../constants/texts';
+import { getDefaultMode } from '../../helpers/game';
 import * as gameState from '../../store/game';
 import { mode, Mode } from '../../store/game';
 import * as peerState from '../../store/peer';
@@ -90,7 +91,7 @@ const Home: React.FunctionComponent<TProps> = props => {
       mode.value = _mode;
     } else {
       // reset default value
-      setMode(Mode.Classic);
+      setMode(getDefaultMode());
     }
   }, [_mode, setMode]);
 

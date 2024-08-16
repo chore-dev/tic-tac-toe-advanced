@@ -1,11 +1,23 @@
+import { MODE_KEY, SIZE_KEY } from '../constants/storage';
 import {
   InfiniteMoveStatus,
   Mode,
-  type Player,
+  Player,
   type TCoverUpModeMoveMeta,
   type TMove,
   type TPosition
 } from '../store/game';
+
+export const getDefaultSize = (fallbackSize = 3) => {
+  const size = localStorage.getItem(SIZE_KEY);
+  return size !== null ? parseInt(size) : fallbackSize;
+};
+
+export const getDefaultMode = (fallbackMode = Mode.Classic) => {
+  const mode = localStorage.getItem(MODE_KEY);
+  const _mode = mode !== null ? (parseInt(mode) as Mode) : fallbackMode;
+  return typeof Mode[_mode] !== 'undefined' ? _mode : fallbackMode;
+};
 
 /**
  * create a matrix of positions
@@ -121,4 +133,47 @@ export const isPlayerSuccess = (board: (Player | null)[][], target: Player) => {
   const checkDiagonalsResult = checkDiagonal();
 
   return checkRowsResult || checkColumnsResult || checkDiagonalsResult;
+};
+
+export const checkWinner = (size: number, mode: Mode, moves: TMove[]) => {
+  const board = mapMovesToBoard(size, moves);
+
+  const oSuccess = isPlayerSuccess(board, Player.O);
+  const xSuccess = isPlayerSuccess(board, Player.X);
+
+  switch (mode) {
+    case Mode.Classic: {
+      if (oSuccess || xSuccess) {
+        const winner = oSuccess ? Player.O : Player.X;
+        return winner;
+      }
+      // no winner yet, check if it is a draw game
+      const marks = board.flat().filter(player => player !== null) as Player[];
+      if (marks.length === size * size) {
+        // all boxes are occupied
+        return 'DRAW';
+      }
+      break;
+    }
+    case Mode.CoverUp: {
+      if (oSuccess && xSuccess) {
+        // both succeed at the same time
+        return 'DRAW';
+      }
+      if (oSuccess || xSuccess) {
+        const winner = oSuccess ? Player.O : Player.X;
+        return winner;
+      }
+      break;
+    }
+    case Mode.Infinite: {
+      if (oSuccess || xSuccess) {
+        const winner = oSuccess ? Player.O : Player.X;
+        return winner;
+      }
+      break;
+    }
+  }
+
+  return null;
 };

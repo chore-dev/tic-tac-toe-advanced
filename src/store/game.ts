@@ -1,6 +1,6 @@
 import { signal } from '@preact/signals-react';
 
-import { isPlayerSuccess, mapMovesToBoard } from '../helpers/game';
+import { checkWinner, getDefaultMode, getDefaultSize } from '../helpers/game';
 
 export enum Mode {
   Classic,
@@ -47,9 +47,9 @@ export type TBaseMove = [player: Player, position: TPosition, meta: TMoveMeta];
 export type TMove = [player: Player, position: TPosition, meta: TMoveMetaBase & TMoveMeta];
 export type TWinner = Player | 'DRAW' | null;
 
-export const size = signal(3);
+export const size = signal(getDefaultSize());
 
-export const mode = signal(Mode.Classic);
+export const mode = signal(getDefaultMode());
 
 export const moves = signal<TMove[]>([]);
 
@@ -72,7 +72,7 @@ export const addMove = (move: TBaseMove) => {
   ];
   moves.value = [...moves.value, _move];
   // check winner
-  const _winner = check();
+  const _winner = checkWinner(size.value, mode.value, moves.value);
   if (!_winner) {
     postAddMove();
     togglePlayer();
@@ -91,23 +91,45 @@ const postAddMove = () => {
       break;
     }
     case Mode.Infinite: {
-      if (moves.value.length >= size.value * size.value - size.value) {
-        // mark the oldest move as `RemovingSoon`
-        for (const [, , meta] of moves.value) {
+      if (moves.value.length >= size.value * size.value - size.value + 1) {
+        // remove the move marked as `RemovingSoon`
+        for (let i = 0; i < moves.value.length; i++) {
+          const [player, position, meta] = moves.value[i]!;
           if (meta.mode === mode.value) {
-            if (meta.status === InfiniteMoveStatus.None) {
-              meta.status = InfiniteMoveStatus.RemovingSoon;
+            if (meta.status === InfiniteMoveStatus.RemovingSoon) {
+              const _moves = [...moves.value];
+              const move: TMove = [
+                player,
+                position,
+                {
+                  ...meta,
+                  status: InfiniteMoveStatus.Removed
+                }
+              ];
+              _moves.splice(i, 1, move);
+              moves.value = _moves;
               break;
             }
           }
         }
       }
-      if (moves.value.length >= size.value * size.value - size.value + 1) {
-        // remove the move marked as `RemovingSoon`
-        for (const [, , meta] of moves.value) {
+      if (moves.value.length >= size.value * size.value - size.value) {
+        // mark the oldest move as `RemovingSoon`
+        for (let i = 0; i < moves.value.length; i++) {
+          const [player, position, meta] = moves.value[i]!;
           if (meta.mode === mode.value) {
-            if (meta.status === InfiniteMoveStatus.RemovingSoon) {
-              meta.status = InfiniteMoveStatus.Removed;
+            if (meta.status === InfiniteMoveStatus.None) {
+              const _moves = [...moves.value];
+              const move: TMove = [
+                player,
+                position,
+                {
+                  ...meta,
+                  status: InfiniteMoveStatus.RemovingSoon
+                }
+              ];
+              _moves.splice(i, 1, move);
+              moves.value = _moves;
               break;
             }
           }
@@ -122,49 +144,6 @@ const togglePlayer = () => {
   const index = +(currentPlayer.value === Player.O);
   const player = [Player.O, Player.X][index];
   currentPlayer.value = player as Player;
-};
-
-const check = () => {
-  const board = mapMovesToBoard(size.value, moves.value);
-
-  const oSuccess = isPlayerSuccess(board, Player.O);
-  const xSuccess = isPlayerSuccess(board, Player.X);
-
-  switch (mode.value) {
-    case Mode.Classic: {
-      if (oSuccess || xSuccess) {
-        const winner = oSuccess ? Player.O : Player.X;
-        return winner;
-      }
-      // no winner yet, check if it is a draw game
-      const marks = board.flat().filter(player => player !== null) as Player[];
-      if (marks.length === size.value * size.value) {
-        // all boxes are occupied
-        return 'DRAW';
-      }
-      break;
-    }
-    case Mode.CoverUp: {
-      if (oSuccess && xSuccess) {
-        // both succeed at the same time
-        return 'DRAW';
-      }
-      if (oSuccess || xSuccess) {
-        const winner = oSuccess ? Player.O : Player.X;
-        return winner;
-      }
-      break;
-    }
-    case Mode.Infinite: {
-      if (oSuccess || xSuccess) {
-        const winner = oSuccess ? Player.O : Player.X;
-        return winner;
-      }
-      break;
-    }
-  }
-
-  return null;
 };
 
 export const reset = () => {

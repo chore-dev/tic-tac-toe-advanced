@@ -43,7 +43,7 @@ const InfiniteBox: React.FunctionComponent<TProps> = props => {
   );
 
   const [player, , meta] = move.value ?? [];
-  const { status } = (meta ?? {}) as TInfiniteModeMoveMeta;
+  const { status } = (meta ?? {}) as Partial<TInfiniteModeMoveMeta>;
 
   const handleClick = useCallback(() => {
     if (!move.value) {
@@ -57,7 +57,7 @@ const InfiniteBox: React.FunctionComponent<TProps> = props => {
       ];
       onAddMove(move);
     }
-  }, [position, onAddMove, move.value]);
+  }, [position, onAddMove, move]);
 
   return (
     <button
@@ -68,7 +68,7 @@ const InfiniteBox: React.FunctionComponent<TProps> = props => {
       onClick={handleClick}
       {...otherProps}
     >
-      {player && status !== InfiniteMoveStatus.Removed && (
+      {typeof player !== 'undefined' && status !== InfiniteMoveStatus.Removed && (
         <Mark
           player={player}
           active={move.value === moves.value[moves.value.length - 1]}
