@@ -42,11 +42,11 @@ const Waiting: React.FunctionComponent<TProps> = props => {
 
   const handleCopyButtonClick = useCallback(async () => {
     try {
-      await copy(id);
+      await copy(window.location.href);
     } catch (err) {
       // TODO error handling
     }
-  }, [id, copy]);
+  }, [copy]);
 
   const handleShareButtonClick = useCallback(async () => {
     try {
