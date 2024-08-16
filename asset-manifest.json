@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/tic-tac-toe-advanced/static/css/main.7fc6a18e.css",
-    "main.js": "/tic-tac-toe-advanced/static/js/main.5b465c37.js",
+    "main.css": "/tic-tac-toe-advanced/static/css/main.a222a0b3.css",
+    "main.js": "/tic-tac-toe-advanced/static/js/main.b2b189e0.js",
     "static/media/fa-duotone-900.svg": "/tic-tac-toe-advanced/static/media/fa-duotone-900.906b0b52d7b4e504b630.svg",
     "static/media/fa-solid-900.svg": "/tic-tac-toe-advanced/static/media/fa-solid-900.ceb187c9cc886c93094c.svg",
     "static/media/fa-duotone-900.eot": "/tic-tac-toe-advanced/static/media/fa-duotone-900.8c456be8af278cd56934.eot",
@@ -13,11 +13,11 @@
     "static/media/fa-duotone-900.woff2": "/tic-tac-toe-advanced/static/media/fa-duotone-900.ba609dbee69bb7ea5f84.woff2",
     "static/media/fa-solid-900.woff2": "/tic-tac-toe-advanced/static/media/fa-solid-900.54dfc8f551be346014e4.woff2",
     "index.html": "/tic-tac-toe-advanced/index.html",
-    "main.7fc6a18e.css.map": "/tic-tac-toe-advanced/static/css/main.7fc6a18e.css.map",
-    "main.5b465c37.js.map": "/tic-tac-toe-advanced/static/js/main.5b465c37.js.map"
+    "main.a222a0b3.css.map": "/tic-tac-toe-advanced/static/css/main.a222a0b3.css.map",
+    "main.b2b189e0.js.map": "/tic-tac-toe-advanced/static/js/main.b2b189e0.js.map"
   },
   "entrypoints": [
-    "static/css/main.7fc6a18e.css",
-    "static/js/main.5b465c37.js"
+    "static/css/main.a222a0b3.css",
+    "static/js/main.b2b189e0.js"
   ]
 }
