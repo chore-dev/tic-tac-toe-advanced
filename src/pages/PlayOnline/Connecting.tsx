@@ -1,10 +1,11 @@
 import { CircularProgress } from '@nextui-org/react';
+import { useSignals } from '@preact/signals-react/runtime';
 import classNames from 'classnames';
 import React, { useEffect } from 'react';
 
 import Typography from '../../components/Typography/Typography';
-import { bindOnlineModeDataEvents } from '../../helpers/peer';
-import { connected, connection, error, initializePeer, peer } from '../../store/peer';
+import { bindConnectionEvents, initializePeer } from '../../helpers/peer';
+import { connected, connection, error } from '../../store/peer';
 // import styles from './Connecting.module.scss';
 
 /**
@@ -26,18 +27,18 @@ type TComponentProps = React.ComponentPropsWithoutRef<'section'>;
 type TProps = IProps & TComponentProps;
 
 const Connecting: React.FunctionComponent<TProps> = props => {
+  useSignals();
+
   const { className, id, ...otherProps } = props;
 
   useEffect(() => {
-    if (id && !peer.value && !connection.value && !connected.value) {
+    if (id && !connection.value && !connected.value) {
       const _peer = initializePeer();
       _peer.on('open', () => {
-        const _connection = connection.value || _peer.connect(id);
+        const _connection = _peer.connect(id);
         connection.value = _connection;
         _connection.on('open', () => {
-          _peer.disconnect();
-          connected.value = true;
-          bindOnlineModeDataEvents(_connection);
+          bindConnectionEvents(_connection);
         });
         _connection.on('close', () => {
           connected.value = false;

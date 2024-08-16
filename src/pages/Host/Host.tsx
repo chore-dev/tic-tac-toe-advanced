@@ -1,13 +1,15 @@
 import { Button, CircularProgress } from '@nextui-org/react';
 import React, { useCallback, useEffect } from 'react';
-import { generatePath, useNavigate, useSearchParams } from 'react-router-dom';
+import { generatePath, useNavigate } from 'react-router-dom';
 
 import * as gameActions from '../../actions/game';
+import * as peerActions from '../../actions/peer';
 import Typography from '../../components/Typography/Typography';
 import { ROUTES } from '../../constants/routes';
-import { bindOnlineModeDataEvents } from '../../helpers/peer';
+import { ERRORS } from '../../constants/texts';
+import { bindConnectionEvents, initializePeer } from '../../helpers/peer';
 import { currentPlayer, mode, moves, size } from '../../store/game';
-import { connected, connection, hosted, initializePeer } from '../../store/peer';
+import { connected, connection, hosted } from '../../store/peer';
 // import styles from './Host.module.scss';
 
 /**
@@ -29,36 +31,39 @@ const Host: React.FunctionComponent<TProps> = props => {
   const { className, ...otherProps } = props;
 
   const navigate = useNavigate();
-  const [params] = useSearchParams();
-
-  const id = params.get('id');
 
   const handleCancelButtonClick = useCallback(() => {
     navigate(ROUTES.Home);
   }, [navigate]);
 
   useEffect(() => {
-    const _peer = initializePeer(id || undefined);
+    const _peer = initializePeer();
     _peer.on('open', id => {
       hosted.value = true;
       const path = generatePath(ROUTES.PlayOnline, { id });
       navigate(path, { replace: true });
     });
     _peer.on('connection', _connection => {
-      connection.value = _connection;
-      _connection.on('open', () => {
-        _peer.disconnect();
-        connected.value = true;
-        _connection.send(
-          gameActions.init(size.value, mode.value, moves.value, currentPlayer.value)
-        );
-        bindOnlineModeDataEvents(_connection);
-      });
-      _connection.on('close', () => {
-        connected.value = false;
-      });
+      if (!connection.value) {
+        connection.value = _connection;
+        _connection.on('open', () => {
+          connected.value = true;
+          _connection.send(
+            gameActions.init(size.value, mode.value, moves.value, currentPlayer.value)
+          );
+          bindConnectionEvents(_connection);
+        });
+        _connection.on('close', () => {
+          connection.value = null;
+          connected.value = false;
+        });
+      } else {
+        _connection.on('open', () => {
+          _connection.send(peerActions.error(ERRORS.GameInProgress));
+        });
+      }
     });
-  }, [navigate, id]);
+  }, [navigate]);
 
   return (
     <main

@@ -5,3 +5,8 @@ export const MODES = {
   [Mode.Infinite]: 'Infinite',
   [Mode.CoverUp]: 'Cover-up'
 } as const;
+
+export const ERRORS = {
+  PeerUnavailable: 'The host is not available.',
+  GameInProgress: 'The game is in progress.'
+} as const;

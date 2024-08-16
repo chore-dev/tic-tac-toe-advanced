@@ -1,50 +1,48 @@
-import { type DataConnection } from 'peerjs';
+import Peer, { type DataConnection } from 'peerjs';
 
-import {
-  addMove,
-  currentPlayer,
-  mode,
-  Mode,
-  moves,
-  reset,
-  size,
-  type Player,
-  type TMove
-} from '../store/game';
+import type { TConnectionGameData } from '../actions/game';
+import type { TConnectionPeerData } from '../actions/peer';
+import { peerJS } from '../config/app';
+import { ERRORS } from '../constants/texts';
+import { addMove, currentPlayer, mode, moves, reset, size } from '../store/game';
+import { connected, connection, error, hosted, peer } from '../store/peer';
 
-/** init game config with the host */
-type TGameInitData = {
-  type: 'game:init';
-  payload: {
-    size: number;
-    mode: Mode;
-    moves: TMove[];
-    currentPlayer: Player;
-  };
+export const initializePeer = () => {
+  if (!peer.value) {
+    const _peer = new Peer({
+      host: peerJS.host,
+      port: peerJS.port ? parseInt(peerJS.port) : undefined,
+      secure: true
+    });
+    _peer.on('close', () => {
+      hosted.value = false;
+      peer.value = null;
+      connection.value = null;
+      connected.value = false;
+      error.value = null;
+    });
+    _peer.on('error', err => {
+      switch (err.type) {
+        case 'peer-unavailable': {
+          error.value = ERRORS.PeerUnavailable;
+        }
+      }
+    });
+    peer.value = _peer;
+  }
+  return peer.value;
 };
 
-type TGameMoveData = {
-  type: 'game:addMove';
-  payload: {
-    move: TMove;
-  };
-};
-
-type TGameResetData = {
-  type: 'game:reset';
-};
-
-export type TConnectionData = TGameInitData | TGameMoveData | TGameResetData;
-
-export const bindOnlineModeDataEvents = (connection: DataConnection) => {
+export const bindConnectionEvents = (connection: DataConnection) => {
   connection.on('data', data => {
-    const _data = data as TConnectionData;
+    const _data = data as TConnectionGameData | TConnectionPeerData;
     switch (_data.type) {
       case 'game:init': {
         size.value = _data.payload.size;
         mode.value = _data.payload.mode;
         moves.value = _data.payload.moves;
         currentPlayer.value = _data.payload.currentPlayer;
+        connected.value = true;
         break;
       }
       case 'game:addMove': {
@@ -54,6 +52,10 @@ export const bindOnlineModeDataEvents = (connection: DataConnection) => {
       }
       case 'game:reset': {
         reset();
+        break;
+      }
+      case 'peer:error': {
+        error.value = _data.payload.message;
         break;
       }
     }
