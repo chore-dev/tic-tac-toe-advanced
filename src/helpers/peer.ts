@@ -1,4 +1,4 @@
-import type { DataConnection } from 'peerjs';
+import { type DataConnection } from 'peerjs';
 
 import {
   addMove,

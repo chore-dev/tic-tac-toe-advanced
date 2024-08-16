@@ -37,7 +37,7 @@ const ClassicBox: React.FunctionComponent<TProps> = props => {
       const move: TBaseMove = [currentPlayer.value, position, { mode: Mode.Classic }];
       onAddMove(move);
     }
-  }, [position, onAddMove, move.value]);
+  }, [position, onAddMove, move]);
 
   return (
     <button

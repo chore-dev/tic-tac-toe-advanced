@@ -33,15 +33,19 @@ type TOmittedProps = 'children';
  */
 type TProps = IProps & Omit<TComponentProps, TOmittedProps>;
 
+type TDragEndEventData = {
+  position?: TPosition;
+};
+
 const CoverUpBoard: React.FunctionComponent<TProps> = props => {
   const { disabled, onAddMove, ...otherProps } = props;
 
   const handleDragEnd: Required<React.ComponentProps<typeof DndContext>>['onDragEnd'] = useCallback(
     event => {
       const { active, over } = event;
-      const { position: activePosition } = active.data.current as { position: TPosition };
-      const { position: overPosition } = (over?.data.current ?? {}) as { position: TPosition };
-      if (overPosition) {
+      const { position: activePosition } = (active.data.current ?? {}) as TDragEndEventData;
+      const { position: overPosition } = (over?.data.current ?? {}) as TDragEndEventData;
+      if (activePosition && overPosition) {
         if (activePosition.join() !== overPosition.join()) {
           const activeMove = findActiveMove(moves.value, activePosition);
           if (activeMove) {
