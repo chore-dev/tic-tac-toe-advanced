@@ -1,0 +1,22 @@
+.swiper {
+  :global {
+    .swiper-slide {
+      &:not(#{&}-active) {
+        @apply opacity-30;
+      }
+    }
+  }
+
+  &.mounted {
+    :global {
+      .swiper-slide {
+        @apply transition-opacity duration-300 ease-in-out;
+      }
+    }
+  }
+}
+
+.mode-card {
+  // 320px width with 2 slides per view and 16px space between
+  width: calc(80rem / 2 - 16px / 2);
+}

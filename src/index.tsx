@@ -1,6 +1,10 @@
 import '@fortawesome/fontawesome-pro/css/fontawesome.css';
+
 import '@fortawesome/fontawesome-pro/css/duotone.css';
 import '@fortawesome/fontawesome-pro/css/solid.css';
+
+import 'swiper/scss';
+
 // import React from 'react';
 import ReactDOM from 'react-dom/client';
 

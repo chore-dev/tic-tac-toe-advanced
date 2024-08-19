@@ -86,6 +86,9 @@ dependencies:
   sass:
     specifier: ^1.77.8
     version: 1.77.8
+  swiper:
+    specifier: ^11.1.9
+    version: 11.1.9
   tailwind-merge:
     specifier: ^2.4.0
     version: 2.4.0
@@ -20085,6 +20088,14 @@ packages:
       csso: 4.2.0
       picocolors: 1.0.1
       stable: 0.1.8
+    dev: false
+
+  /swiper@11.1.9:
+    resolution:
+      {
+        integrity: sha512-rflu8zvfGa3x1v/aeSufk4zRJffhOQowyvtJlp46sUBnOqAuk1Rdv5Ldj0AWWBV595iZ+ZMk7VB35ZRtRUomtA==
+      }
+    engines: { node: '>= 4.7.0' }
     dev: false
 
   /symbol-tree@3.2.4:

@@ -1,14 +1,16 @@
 import { useLocalStorage } from '@gtomato-web/react-hooks';
-import { Button, Chip, Input, Radio, RadioGroup } from '@nextui-org/react';
+import { Button, Chip, Input } from '@nextui-org/react';
 import { useSignals } from '@preact/signals-react/runtime';
 import classNames from 'classnames';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { generatePath, useNavigate } from 'react-router-dom';
 
 import Divider from '../../components/Divider/Divider';
+import ModeSelector from '../../components/ModeSelector/ModeSelector';
 import Typography from '../../components/Typography/Typography';
+import { MODE_OPTIONS } from '../../constants/game';
 import { ROUTES } from '../../constants/routes';
-import { MODES } from '../../constants/texts';
+import { MODE_KEY } from '../../constants/storage';
 import { getDefaultMode } from '../../helpers/game';
 import * as gameState from '../../store/game';
 import { mode, Mode } from '../../store/game';
@@ -37,21 +39,21 @@ const Home: React.FunctionComponent<TProps> = props => {
 
   const navigate = useNavigate();
   const peerIdInputRef = useRef<HTMLInputElement>(null);
-  const [_mode, , setMode] = useLocalStorage<Mode>('mode');
+  const [storedMode, , storeMode] = useLocalStorage<Mode>(MODE_KEY);
 
   // const handleSizeChange: React.ChangeEventHandler<HTMLInputElement> = useCallback((event) => {
   //   const { value } = event.target;
   //   size.value = parseInt(value);
   // }, []);
 
-  const handleModeChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
-    event => {
-      const { value } = event.target;
-      const _mode = parseInt(value) as Mode;
-      setMode(_mode);
-    },
-    [setMode]
-  );
+  const handleModeChange: Required<React.ComponentProps<typeof ModeSelector<Mode>>>['onChange'] =
+    useCallback(
+      option => {
+        const mode = option.value;
+        storeMode(mode);
+      },
+      [storeMode]
+    );
 
   const handlePeerIdClear: Required<React.ComponentProps<typeof Input>>['onClear'] =
     useCallback(() => {
@@ -86,14 +88,14 @@ const Home: React.FunctionComponent<TProps> = props => {
   );
 
   useEffect(() => {
-    if (_mode !== null && typeof Mode[_mode] !== 'undefined') {
+    if (storedMode !== null && typeof Mode[storedMode] !== 'undefined') {
       // sync the value with the store
-      mode.value = _mode;
+      mode.value = storedMode;
     } else {
       // reset default value
-      setMode(getDefaultMode());
+      storeMode(getDefaultMode());
     }
-  }, [_mode, setMode]);
+  }, [storedMode, storeMode]);
 
   useEffect(() => {
     gameState.reset();
@@ -102,7 +104,7 @@ const Home: React.FunctionComponent<TProps> = props => {
 
   return (
     <main
-      className={classNames(className, 'flex flex-col gap-8')}
+      className={classNames(className, 'flex flex-col gap-8', 'w-80')}
       {...otherProps}
     >
       <div className='flex justify-center'>
@@ -121,21 +123,14 @@ const Home: React.FunctionComponent<TProps> = props => {
           </Chip>
         </Typography>
       </div>
-      <section className='flex flex-col gap-4'>
-        <RadioGroup
-          label={<Typography variant='title5'>Mode</Typography>}
-          value={`${mode.value}`}
-        >
-          {[Mode.Classic, Mode.Infinite, Mode.CoverUp].map(_mode => (
-            <Radio
-              key={_mode}
-              value={`${_mode}`}
-              onChange={handleModeChange}
-            >
-              <Typography variant='title5'>{MODES[_mode]}</Typography>
-            </Radio>
-          ))}
-        </RadioGroup>
+      <section className='flex flex-col gap-4 mt-6'>
+        <ModeSelector
+          className='w-full mx-auto'
+          options={MODE_OPTIONS}
+          defaultValue={mode.value}
+          onChange={handleModeChange}
+        />
+
         {/*
         <Input
           type="number"
@@ -151,12 +146,14 @@ const Home: React.FunctionComponent<TProps> = props => {
       </section>
       <section className='flex gap-4'>
         <Button
+          className='flex-1'
           color='secondary'
           onClick={handlePlayLocalButtonClick}
         >
           Local play
         </Button>
         <Button
+          className='flex-1'
           color='primary'
           onClick={handleHostButtonClick}
         >
