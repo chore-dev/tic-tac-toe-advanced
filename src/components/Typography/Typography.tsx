@@ -9,18 +9,17 @@ import React from 'react';
 interface IProps {
   as?: React.ElementType;
   variant?: keyof typeof VARIANT_CLASSNAMES;
-  bold?: boolean;
 }
 
 /**
  * component props
  */
-type TComponentProps = React.ComponentPropsWithoutRef<React.ElementType>;
+type TComponentProps<E extends React.ElementType> = React.ComponentPropsWithoutRef<E>;
 
 /**
  * `Typography` props
  */
-type TProps = IProps & TComponentProps;
+type TProps<E extends React.ElementType> = IProps & TComponentProps<E>;
 
 const VARIANT_CLASSNAMES = {
   title1: 'text-5xl',
@@ -34,15 +33,15 @@ const VARIANT_CLASSNAMES = {
   caption: 'text-xs'
 } as const;
 
-const Typography: React.FunctionComponent<TProps> = props => {
-  const { className, as: Component = 'span', variant = 'body1', bold, ...otherProps } = props;
+function Typography<Element extends React.ElementType = 'span'>(props: TProps<Element>) {
+  const { className, as: Component = 'span', variant = 'body1', ...otherProps } = props;
   return (
     <Component
-      className={classNames(className, VARIANT_CLASSNAMES[variant], { 'font-bold': bold })}
+      className={classNames(className, VARIANT_CLASSNAMES[variant])}
       {...otherProps}
     />
   );
-};
+}
 
 Typography.displayName = 'Typography';
 
