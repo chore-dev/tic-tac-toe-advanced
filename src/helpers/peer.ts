@@ -9,11 +9,14 @@ import { connected, connection, error, hosted, peer } from '../store/peer';
 
 export const initializePeer = () => {
   if (!peer.value) {
-    const _peer = new Peer({
-      host: peerJS.host,
-      port: peerJS.port ? parseInt(peerJS.port) : undefined,
-      secure: true
-    });
+    const _peer =
+      !peerJS.host || !peerJS.port
+        ? new Peer()
+        : new Peer({
+            host: peerJS.host,
+            port: peerJS.port ? parseInt(peerJS.port) : undefined,
+            secure: true
+          });
     _peer.on('close', () => {
       hosted.value = false;
       peer.value = null;
