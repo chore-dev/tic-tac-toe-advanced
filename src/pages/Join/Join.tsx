@@ -25,7 +25,7 @@ type TParams = {
   id: string;
 };
 
-const Join: React.FunctionComponent<TProps> = (props) => {
+const Join: React.FunctionComponent<TProps> = props => {
   const { id } = useParams<TParams>();
 
   const navigate = useNavigate();

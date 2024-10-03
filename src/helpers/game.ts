@@ -21,11 +21,11 @@ export const isPlayerSuccess = (matrix: (Player | null)[][], target: Player) => 
   const size = matrix.length;
 
   const checkRow = (row: (typeof matrix)[number]) => {
-    return row.every((player) => player === target);
+    return row.every(player => player === target);
   };
 
   const checkColumn = (column: number) => {
-    return checkRow(matrix.map((row) => row[column]!));
+    return checkRow(matrix.map(row => row[column]!));
   };
 
   const checkDiagonal = () => {
@@ -38,7 +38,7 @@ export const isPlayerSuccess = (matrix: (Player | null)[][], target: Player) => 
     return checkRow(diagonal1) || checkRow(diagonal2);
   };
 
-  const checkRowsResult = matrix.some((row) => checkRow(row));
+  const checkRowsResult = matrix.some(row => checkRow(row));
   const checkColumnsResult = matrix.some((_, index) => checkColumn(index));
   const checkDiagonalsResult = checkDiagonal();
 

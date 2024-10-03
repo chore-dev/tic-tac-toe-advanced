@@ -27,7 +27,7 @@ type TComponentProps = React.ComponentPropsWithoutRef<'main'>;
  */
 type TProps = IProps & TComponentProps;
 
-const Host: React.FunctionComponent<TProps> = (props) => {
+const Host: React.FunctionComponent<TProps> = props => {
   const { className, ...otherProps } = props;
 
   const navigate = useNavigate();
@@ -39,18 +39,18 @@ const Host: React.FunctionComponent<TProps> = (props) => {
   useEffect(() => {
     const onlineGame = OnlineGame.init(true);
     const peer = onlineGame.initPeer();
-    peer.on('open', (id) => {
+    peer.on('open', id => {
       const path = generatePath(ROUTES.PlayOnline, { id });
       navigate(path, { replace: true });
     });
-    peer.on('connection', (connection) => {
+    peer.on('connection', connection => {
       if (!onlineGame.connection.value) {
         connection.on('open', () => {
           const game = onlineGame.initGame(mode.value, size.value);
           const { board, currentPlayer } = game;
           const { moves } = board;
           connection.send(
-            gameActions.init(mode.value, size.value, moves.value, currentPlayer.value!),
+            gameActions.init(mode.value, size.value, moves.value, currentPlayer.value!)
           );
           onlineGame.bind(connection);
         });
@@ -68,10 +68,13 @@ const Host: React.FunctionComponent<TProps> = (props) => {
   }, [navigate]);
 
   return (
-    <main className={classNames(className, 'flex flex-col items-center gap-4')} {...otherProps}>
-      <div className="flex items-center gap-4">
-        <Typography variant="title2">Loading...</Typography>
-        <CircularProgress size="sm" />
+    <main
+      className={classNames(className, 'flex flex-col items-center gap-4')}
+      {...otherProps}
+    >
+      <div className='flex items-center gap-4'>
+        <Typography variant='title2'>Loading...</Typography>
+        <CircularProgress size='sm' />
       </div>
       <Button onClick={handleCancelButtonClick}>Cancel</Button>
     </main>

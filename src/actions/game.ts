@@ -29,25 +29,25 @@ export const init = (
   mode: Mode,
   size: number,
   moves: TAnyMove[],
-  currentPlayer: Player,
+  currentPlayer: Player
 ): TGameInitData => ({
   type: 'game:init',
   payload: {
     mode,
     size,
     moves,
-    currentPlayer,
-  },
+    currentPlayer
+  }
 });
 
 export const addMove = (move: TAnyMove): TGameAddMoveData => ({
   type: 'game:addMove',
   payload: {
-    move,
-  },
+    move
+  }
 });
 
 export const reset = (): TConnectionGameData => ({
   type: 'game:reset',
-  payload: {},
+  payload: {}
 });

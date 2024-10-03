@@ -22,7 +22,7 @@ type TComponentProps = React.ComponentPropsWithoutRef<'main'>;
  */
 type TProps = IProps & TComponentProps;
 
-const PlayLocal: React.FunctionComponent<TProps> = (props) => {
+const PlayLocal: React.FunctionComponent<TProps> = props => {
   useSignals();
 
   const { className, ...otherProps } = props;
@@ -35,7 +35,10 @@ const PlayLocal: React.FunctionComponent<TProps> = (props) => {
   }, []);
 
   return (
-    <main className={classNames(className, 'w-full')} {...otherProps}>
+    <main
+      className={classNames(className, 'w-full')}
+      {...otherProps}
+    >
       {game.value && <Game />}
     </main>
   );

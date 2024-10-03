@@ -7,7 +7,7 @@ import {
   CircularProgress,
   Popover,
   PopoverContent,
-  PopoverTrigger,
+  PopoverTrigger
 } from '@nextui-org/react';
 import classNames from 'classnames';
 import React, { useCallback } from 'react';
@@ -35,7 +35,7 @@ type TComponentProps = React.ComponentPropsWithoutRef<'section'>;
  */
 type TProps = IProps & TComponentProps;
 
-const Waiting: React.FunctionComponent<TProps> = (props) => {
+const Waiting: React.FunctionComponent<TProps> = props => {
   const { className, id, ...otherProps } = props;
 
   const [copy] = useClipboard();
@@ -62,25 +62,41 @@ const Waiting: React.FunctionComponent<TProps> = (props) => {
       className={classNames(className, 'flex flex-col items-center gap-4 w-full')}
       {...otherProps}
     >
-      <div className="flex items-center justify-center gap-4 w-full">
-        <Typography className="shrink truncate" variant="title2">
+      <div className='flex items-center justify-center gap-4 w-full'>
+        <Typography
+          className='shrink truncate'
+          variant='title2'
+        >
           Waiting for connection...
         </Typography>
-        <CircularProgress size="sm" />
+        <CircularProgress size='sm' />
       </div>
-      <div className="flex items-center justify-center gap-2 w-full">
-        <Typography className="truncate" variant="title4">
+      <div className='flex items-center justify-center gap-2 w-full'>
+        <Typography
+          className='truncate'
+          variant='title4'
+        >
           {id}
         </Typography>
         {/* @ts-expect-error `window.navigator.share` could be undefined when no HTTPS (e.g. local development) */}
         {window.navigator.share ? (
-          <Button isIconOnly size="sm" onClick={handleShareButtonClick} aria-label="Share">
+          <Button
+            isIconOnly
+            size='sm'
+            onClick={handleShareButtonClick}
+            aria-label='Share'
+          >
             <FontAwesomeIcon icon={faArrowUpFromBracket} />
           </Button>
         ) : (
-          <Popover placement="right">
+          <Popover placement='right'>
             <PopoverTrigger>
-              <Button isIconOnly size="sm" onClick={handleCopyButtonClick} aria-label="Copy">
+              <Button
+                isIconOnly
+                size='sm'
+                onClick={handleCopyButtonClick}
+                aria-label='Copy'
+              >
                 <FontAwesomeIcon icon={faCopy} />
               </Button>
             </PopoverTrigger>

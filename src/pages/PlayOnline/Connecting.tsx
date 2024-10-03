@@ -28,7 +28,7 @@ type TComponentProps = React.ComponentPropsWithoutRef<'section'>;
  */
 type TProps = IProps & TComponentProps;
 
-const Connecting: React.FunctionComponent<TProps> = (props) => {
+const Connecting: React.FunctionComponent<TProps> = props => {
   useSignals();
 
   const { className, id, onlineGame, ...otherProps } = props;
@@ -42,21 +42,30 @@ const Connecting: React.FunctionComponent<TProps> = (props) => {
       className={classNames(className, 'flex flex-col items-center gap-4 w-full')}
       {...otherProps}
     >
-      <div className="flex items-center justify-center gap-4 w-full">
+      <div className='flex items-center justify-center gap-4 w-full'>
         {!error.value ? (
           <>
-            <Typography className="truncate" variant="title2">
+            <Typography
+              className='truncate'
+              variant='title2'
+            >
               Connecting...
             </Typography>
-            <CircularProgress size="sm" />
+            <CircularProgress size='sm' />
           </>
         ) : (
-          <Typography className="truncate" variant="title2">
+          <Typography
+            className='truncate'
+            variant='title2'
+          >
             Connection failed
           </Typography>
         )}
       </div>
-      <Typography className="text-center truncate w-full" variant="title4">
+      <Typography
+        className='text-center truncate w-full'
+        variant='title4'
+      >
         {error.value || id}
       </Typography>
     </section>

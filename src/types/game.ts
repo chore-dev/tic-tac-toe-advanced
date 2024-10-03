@@ -4,13 +4,13 @@ import type InfiniteGame from '../models/InfiniteGame';
 
 export enum Player {
   O = 'O',
-  X = 'X',
+  X = 'X'
 }
 
 export enum Mode {
   Classic,
   Infinite,
-  CoverUp,
+  CoverUp
 }
 
 export type TGame = ClassicGame | CoverUpGame | InfiniteGame;
@@ -24,7 +24,7 @@ export type TBaseMoveMeta = { id?: number };
 export type TMove<TMoveMeta extends object> = [
   player: Player,
   position: TPosition,
-  meta: TMoveMeta & TBaseMoveMeta,
+  meta: TMoveMeta & TBaseMoveMeta
 ];
 
 export type TAnyMove = TMove<any>;
