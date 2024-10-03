@@ -5,7 +5,7 @@ import { Badge } from '@nextui-org/react';
 import classNames from 'classnames';
 import React from 'react';
 
-import type { Player } from '../../store/game';
+import type { Player } from '../../types/game';
 import Mark from '../Mark/Mark';
 import styles from './PlayerBox.module.scss';
 
@@ -29,20 +29,15 @@ type TComponentProps = React.ComponentPropsWithoutRef<'div'>;
  */
 type TProps = IProps & TComponentProps;
 
-const PlayerBox: React.FunctionComponent<TProps> = props => {
+const PlayerBox: React.FunctionComponent<TProps> = (props) => {
   const { className, me, player, active, won, ...otherProps } = props;
   return (
     <Badge
       className={classNames('size-6', { 'opacity-30': won === false })}
-      color='primary'
-      shape='circle'
+      color="primary"
+      shape="circle"
       isInvisible={typeof me === 'undefined' || me !== player}
-      content={
-        <FontAwesomeIcon
-          size='xs'
-          icon={faUser}
-        />
-      }
+      content={<FontAwesomeIcon size="xs" icon={faUser} />}
     >
       <div
         className={classNames(
@@ -56,24 +51,15 @@ const PlayerBox: React.FunctionComponent<TProps> = props => {
           {
             [styles.glow!]: active,
             'opacity-30': won === false,
-            'scale-110': won
-          }
+            'scale-110': won,
+          },
         )}
         {...otherProps}
       >
-        <Mark
-          size='md'
-          player={player}
-          active={active}
-          bounce={false}
-        />
+        <Mark size="md" player={player} active={active} bounce={false} />
         {won && (
           <span className={classNames('absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2')}>
-            <FontAwesomeIcon
-              className={classNames('animate-bounce')}
-              size='lg'
-              icon={faCrown}
-            />
+            <FontAwesomeIcon className={classNames('animate-bounce')} size="lg" icon={faCrown} />
           </span>
         )}
       </div>

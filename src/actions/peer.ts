@@ -1,4 +1,4 @@
-type TPeerErrorData = {
+export type TPeerErrorData = {
   type: 'peer:error';
   payload: {
     message: string;

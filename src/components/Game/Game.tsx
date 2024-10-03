@@ -8,21 +8,13 @@ import classNames from 'classnames';
 import React, { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { AUDIOS } from '../../constants/audios';
 import { ROUTES } from '../../constants/routes';
 import { MODES } from '../../constants/texts';
 import useAudio from '../../hooks/useAudio';
-import {
-  addMove,
-  currentPlayer,
-  Mode,
-  mode,
-  moves,
-  Player,
-  reset,
-  size,
-  winner,
-  type TMove
-} from '../../store/game';
+import useGame from '../../hooks/useGame';
+import Board from '../../models/Board';
+import { Mode, Player, type TAnyMove } from '../../types/game';
 import ClassicBoard from '../Board/ClassicBoard';
 import CoverUpBoard from '../Board/CoverUpBoard';
 import InfiniteBoard from '../Board/InfiniteBoard';
@@ -38,7 +30,7 @@ interface IProps {
   hosted?: boolean;
   connected?: boolean;
   disabled?: boolean;
-  onAddMove?: (move: TMove) => void;
+  onAddMove?: (move: TAnyMove) => void;
   onReset?: () => void;
 }
 
@@ -52,33 +44,41 @@ type TComponentProps = React.ComponentPropsWithoutRef<'div'>;
  */
 type TProps = IProps & TComponentProps;
 
+type THandleAddMove = React.ComponentProps<typeof ClassicBoard>['onAddMove'] &
+  React.ComponentProps<typeof CoverUpBoard>['onAddMove'] &
+  React.ComponentProps<typeof InfiniteBoard>['onAddMove'];
+
 const BOARD_COMPONENTS = {
   [Mode.Classic]: ClassicBoard,
   [Mode.CoverUp]: CoverUpBoard,
-  [Mode.Infinite]: InfiniteBoard
+  [Mode.Infinite]: InfiniteBoard,
 } as const;
 
-const Game: React.FunctionComponent<TProps> = props => {
+const Game: React.FunctionComponent<TProps> = (props) => {
   useSignals();
-
   const { className, me, hosted, connected, disabled, onAddMove, onReset, ...otherProps } = props;
 
-  const Board = BOARD_COMPONENTS[mode.value];
+  const [game, board] = useGame()!;
+  const { mode, currentPlayer, winner } = game!;
+  const { moves } = board;
+  const _disabled = disabled || !!winner.value;
 
   const navigate = useNavigate();
-  const [, playStartAudio] = useAudio(process.env.PUBLIC_URL + '/assets/audio/start.mp3');
-  const [, playAddMoveAudio] = useAudio(process.env.PUBLIC_URL + '/assets/audio/move.mp3');
-  const [, playWinnerAudio] = useAudio(process.env.PUBLIC_URL + '/assets/audio/winner.mp3');
-  const [, playDrawAudio] = useAudio(process.env.PUBLIC_URL + '/assets/audio/draw.mp3');
+  const [playStartAudio] = useAudio(AUDIOS.Start);
+  const [playAddMoveAudio] = useAudio(AUDIOS.Move);
+  const [playWinnerAudio] = useAudio(AUDIOS.Winner);
+  const [playDrawAudio] = useAudio(AUDIOS.Draw);
 
-  const handleAddMove: React.ComponentProps<typeof Board>['onAddMove'] = useCallback(
-    move => {
-      if (!disabled && !winner.value) {
-        const _move = addMove(move);
+  const Board = BOARD_COMPONENTS[mode];
+
+  const handleAddMove: THandleAddMove = useCallback(
+    (move) => {
+      if (!_disabled && !winner.value) {
+        const _move = game.addMove(move as TAnyMove);
         onAddMove?.(_move);
       }
     },
-    [disabled, onAddMove]
+    [game, winner, _disabled, onAddMove],
   );
 
   const handleBackButtonClick = useCallback(() => {
@@ -86,9 +86,9 @@ const Game: React.FunctionComponent<TProps> = props => {
   }, [navigate]);
 
   const handleResetButtonClick = useCallback(() => {
-    reset();
+    game.reset();
     onReset?.();
-  }, [onReset]);
+  }, [game, onReset]);
 
   useSignalEffect(() => {
     if (winner.value) {
@@ -110,13 +110,14 @@ const Game: React.FunctionComponent<TProps> = props => {
     playStartAudio();
   }, [playStartAudio]);
 
+  useEffect(() => {
+    game.start();
+  }, [game]);
+
   return (
-    <div
-      className={classNames(className, 'flex flex-col items-center gap-4')}
-      {...otherProps}
-    >
-      <section className='flex flex-col items-center gap-4'>
-        <div className='flex items-center gap-4'>
+    <div className={classNames(className, 'flex flex-col items-center gap-4')} {...otherProps}>
+      <section className="flex flex-col items-center gap-4">
+        <div className="flex items-center gap-4">
           <PlayerBox
             me={me}
             player={Player.O}
@@ -132,38 +133,28 @@ const Game: React.FunctionComponent<TProps> = props => {
           />
         </div>
       </section>
-      <div className='relative flex justify-center'>
+      <div className="relative flex justify-center">
         <Board
           className={classNames('transition-opacity duration-500 ease-out', {
-            'opacity-30': !!winner.value
+            'opacity-30': !!winner.value,
           })}
-          size={size.value}
-          disabled={disabled}
+          board={board as Board<TAnyMove>}
+          disabled={_disabled}
           onAddMove={handleAddMove}
         />
         {!!winner.value && (!connected || hosted) && (
           <div className={classNames('flex items-center gap-4', 'absolute-center')}>
             <Button
-              size='lg'
-              startContent={
-                <FontAwesomeIcon
-                  size='2x'
-                  icon={faCircleArrowLeft}
-                />
-              }
+              size="lg"
+              startContent={<FontAwesomeIcon size="2x" icon={faCircleArrowLeft} />}
               onClick={handleBackButtonClick}
             >
               Back
             </Button>
             <Button
-              size='lg'
-              color='primary'
-              startContent={
-                <FontAwesomeIcon
-                  size='2x'
-                  icon={faRotateRight}
-                />
-              }
+              size="lg"
+              color="primary"
+              startContent={<FontAwesomeIcon size="2x" icon={faRotateRight} />}
               onClick={handleResetButtonClick}
             >
               Again
@@ -171,11 +162,8 @@ const Game: React.FunctionComponent<TProps> = props => {
           </div>
         )}
       </div>
-      <Chip
-        color='primary'
-        size='lg'
-      >
-        {MODES[mode.value]}
+      <Chip color="primary" size="lg">
+        {MODES[mode]}
       </Chip>
     </div>
   );

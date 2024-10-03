@@ -1,33 +1,32 @@
 import React from 'react';
 
-import type { TBaseMove } from '../../store/game';
+import type { TClassicModeMove } from '../../models/ClassicGame';
 import ClassicBox from '../Box/ClassicBox';
-import BaseBoard from './BaseBoard';
+import BaseBoard, { ICommonBoardProps } from './BaseBoard';
 // import styles from './ClassicBoard.module.scss';
 
 /**
  * original props
  */
-interface IProps {
-  disabled?: boolean;
-  onAddMove: (move: TBaseMove) => void;
-}
+interface IProps extends ICommonBoardProps<TClassicModeMove> {}
 
 /**
  * component props
  */
-type TComponentProps = React.ComponentPropsWithoutRef<typeof BaseBoard>;
-type TOmittedProps = 'children';
+type TComponentProps = React.ComponentPropsWithoutRef<'div'>;
 
 /**
  * `ClassicBoard` props
  */
-type TProps = IProps & Omit<TComponentProps, TOmittedProps>;
+type TProps = IProps & TComponentProps;
 
 const ClassicBoard: React.FunctionComponent<TProps> = props => {
-  const { disabled, onAddMove, ...otherProps } = props;
+  const { board, disabled, onAddMove, ...otherProps } = props;
   return (
-    <BaseBoard {...otherProps}>
+    <BaseBoard
+      board={board}
+      {...otherProps}
+    >
       {position => (
         <ClassicBox
           className='size-24'

@@ -3,14 +3,14 @@ import React, { forwardRef } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { PLAYER_ICONS } from '../../constants/game';
-import { Player } from '../../store/game';
+import { Player } from '../../types/game';
 import styles from './Mark.module.scss';
 
 /**
  * original props
  */
 interface IProps {
-  size?: 'sm' | 'md' | 'lg';
+  size?: (typeof SIZES)[keyof typeof SIZES];
   player: Player;
   active?: boolean;
   bounce?: boolean;
@@ -31,14 +31,20 @@ const COLOR_CLASSNAMES = {
   [Player.X]: 'text-red-500'
 } as const;
 
-export const SIZE_CLASSNAMES = {
-  sm: 'text-xl',
-  md: 'text-3xl',
-  lg: 'text-5xl'
+export const SIZES = {
+  Small: 'sm',
+  Medium: 'md',
+  Large: 'lg'
+} as const;
+
+const SIZE_CLASSNAMES = {
+  [SIZES.Small]: 'text-xl',
+  [SIZES.Medium]: 'text-3xl',
+  [SIZES.Large]: 'text-5xl'
 } as const;
 
 const Mark = forwardRef<HTMLSpanElement, TProps>((props, ref) => {
-  const { className, size = 'lg', player, active, bounce = true, ...otherProps } = props;
+  const { className, size = SIZES.Large, player, active, bounce = true, ...otherProps } = props;
   return (
     <span
       ref={ref}
@@ -52,7 +58,7 @@ const Mark = forwardRef<HTMLSpanElement, TProps>((props, ref) => {
         })}
         data-player={player}
       >
-        {player && PLAYER_ICONS[player]}
+        {PLAYER_ICONS[player]}
       </i>
     </span>
   );

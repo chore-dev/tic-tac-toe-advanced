@@ -1,4 +1,4 @@
-import { Mode } from '../store/game';
+import { Mode } from '../types/game';
 
 export const MODES = {
   [Mode.Classic]: 'Classic',
@@ -7,6 +7,7 @@ export const MODES = {
 } as const;
 
 export const ERRORS = {
+  BrowserIncompatible: 'Your device is incompatible with this game.',
   PeerUnavailable: 'The host is not available.',
   GameInProgress: 'The game is in progress.'
 } as const;

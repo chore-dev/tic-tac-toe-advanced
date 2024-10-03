@@ -8,13 +8,12 @@ import { generatePath, useNavigate } from 'react-router-dom';
 import Divider from '../../components/Divider/Divider';
 import ModeSelector from '../../components/ModeSelector/ModeSelector';
 import Typography from '../../components/Typography/Typography';
-import { MODE_OPTIONS } from '../../constants/game';
+import { DEFAULT_MODE, MODE_OPTIONS } from '../../constants/game';
 import { ROUTES } from '../../constants/routes';
 import { MODE_KEY } from '../../constants/storage';
 import { getDefaultMode } from '../../helpers/game';
-import * as gameState from '../../store/game';
-import { mode, Mode } from '../../store/game';
-import * as peerState from '../../store/peer';
+import { mode } from '../../store/game';
+import { Mode } from '../../types/game';
 // import styles from './Home.module.scss';
 
 /**
@@ -32,7 +31,7 @@ type TComponentProps = React.ComponentPropsWithoutRef<'main'>;
  */
 type TProps = IProps & TComponentProps;
 
-const Home: React.FunctionComponent<TProps> = props => {
+const Home: React.FunctionComponent<TProps> = (props) => {
   useSignals();
 
   const { className, ...otherProps } = props;
@@ -48,11 +47,11 @@ const Home: React.FunctionComponent<TProps> = props => {
 
   const handleModeChange: Required<React.ComponentProps<typeof ModeSelector<Mode>>>['onChange'] =
     useCallback(
-      option => {
+      (option) => {
         const mode = option.value;
         storeMode(mode);
       },
-      [storeMode]
+      [storeMode],
     );
 
   const handlePeerIdClear: Required<React.ComponentProps<typeof Input>>['onClear'] =
@@ -72,7 +71,7 @@ const Home: React.FunctionComponent<TProps> = props => {
   }, [navigate]);
 
   const handleJoinFormSubmit: React.FormEventHandler<HTMLFormElement> = useCallback(
-    event => {
+    (event) => {
       event.preventDefault();
       const formData = new FormData(event.target as HTMLFormElement);
       const peerId = formData.get('peerId');
@@ -84,7 +83,7 @@ const Home: React.FunctionComponent<TProps> = props => {
         peerIdInputRef.current?.focus();
       }
     },
-    [navigate]
+    [navigate],
   );
 
   useEffect(() => {
@@ -93,39 +92,27 @@ const Home: React.FunctionComponent<TProps> = props => {
       mode.value = storedMode;
     } else {
       // reset default value
-      storeMode(getDefaultMode());
+      storeMode(getDefaultMode(DEFAULT_MODE));
     }
   }, [storedMode, storeMode]);
 
-  useEffect(() => {
-    gameState.reset();
-    peerState.reset();
-  }, []);
-
   return (
-    <main
-      className={classNames(className, 'flex flex-col gap-8', 'w-80')}
-      {...otherProps}
-    >
-      <div className='flex justify-center'>
-        <Typography
-          as='h1'
-          className='relative'
-          variant='title1'
-        >
+    <main className={classNames(className, 'flex flex-col gap-8', 'w-80')} {...otherProps}>
+      <div className="flex justify-center">
+        <Typography as="h1" className="relative" variant="title1">
           Tic-Tac-Toe
           <Chip
-            size='sm'
-            color='primary'
-            className='text-sm absolute right-0 bottom-0 translate-x-1/2 translate-y-3/4 -rotate-12'
+            size="sm"
+            color="primary"
+            className="text-sm absolute right-0 bottom-0 translate-x-1/2 translate-y-3/4 -rotate-12"
           >
             Advanced
           </Chip>
         </Typography>
       </div>
-      <section className='flex flex-col gap-4 mt-6'>
+      <section className="flex flex-col gap-4 mt-6">
         <ModeSelector
-          className='w-full mx-auto'
+          className="w-full mx-auto"
           options={MODE_OPTIONS}
           defaultValue={mode.value}
           onChange={handleModeChange}
@@ -144,54 +131,37 @@ const Home: React.FunctionComponent<TProps> = props => {
         />
         */}
       </section>
-      <section className='flex gap-4'>
-        <Button
-          className='flex-1'
-          color='secondary'
-          onClick={handlePlayLocalButtonClick}
-        >
+      <section className="flex gap-4">
+        <Button className="flex-1" color="secondary" onClick={handlePlayLocalButtonClick}>
           Local play
         </Button>
-        <Button
-          className='flex-1'
-          color='primary'
-          onClick={handleHostButtonClick}
-        >
+        <Button className="flex-1" color="primary" onClick={handleHostButtonClick}>
           Host a game
         </Button>
       </section>
       <Divider>
-        <Typography variant='title5'>or</Typography>
+        <Typography variant="title5">or</Typography>
       </Divider>
-      <form
-        action=''
-        onSubmit={handleJoinFormSubmit}
-      >
-        <section className='flex items-end gap-4'>
+      <form action="" onSubmit={handleJoinFormSubmit}>
+        <section className="flex items-end gap-4">
           {/* FIXME cannot show native form validation error message */}
           <Input
             ref={peerIdInputRef}
-            className='w-60'
-            type='text'
+            className="w-60"
+            type="text"
             required
             label={
-              <Typography
-                as='h2'
-                variant='title4'
-              >
+              <Typography as="h2" variant="title4">
                 connect to a host
               </Typography>
             }
-            labelPlacement='outside'
-            placeholder='Enter the host ID'
-            name='peerId'
+            labelPlacement="outside"
+            placeholder="Enter the host ID"
+            name="peerId"
             isClearable
             onClear={handlePeerIdClear}
           />
-          <Button
-            type='submit'
-            color='primary'
-          >
+          <Button type="submit" color="primary">
             Join
           </Button>
         </section>

@@ -1,9 +1,10 @@
 import { useSignals } from '@preact/signals-react/runtime';
 import classNames from 'classnames';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import Game from '../../components/Game/Game';
-import { winner } from '../../store/game';
+import { gameFactory } from '../../hooks/useGame';
+import { game, mode, size } from '../../store/game';
 // import styles from './PlayLocal.module.scss';
 
 /**
@@ -21,15 +22,21 @@ type TComponentProps = React.ComponentPropsWithoutRef<'main'>;
  */
 type TProps = IProps & TComponentProps;
 
-const PlayLocal: React.FunctionComponent<TProps> = props => {
+const PlayLocal: React.FunctionComponent<TProps> = (props) => {
   useSignals();
+
   const { className, ...otherProps } = props;
+
+  useEffect(() => {
+    game.value = gameFactory(mode.value, size.value);
+    return () => {
+      game.value = null;
+    };
+  }, []);
+
   return (
-    <main
-      className={classNames(className, 'w-full')}
-      {...otherProps}
-    >
-      <Game disabled={!!winner.value} />
+    <main className={classNames(className, 'w-full')} {...otherProps}>
+      {game.value && <Game />}
     </main>
   );
 };

@@ -1,33 +1,22 @@
 import { useDraggable, useDroppable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { Badge, Button, Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react';
-import { useComputed } from '@preact/signals-react';
 import { useSignals } from '@preact/signals-react/runtime';
 import classNames from 'classnames';
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { COVER_UP_MARK_QUANTITY, IS_COVERED_MARKS_DISPLAYED } from '../../constants/game';
-import { findActiveMoves } from '../../helpers/game';
-import {
-  CoverUpSize,
-  currentPlayer,
-  Mode,
-  moves,
-  Player,
-  type TBaseMove,
-  type TCoverUpModeMoveMeta,
-  type TPosition
-} from '../../store/game';
-import Mark from '../Mark/Mark';
+import { COVER_UP_IS_SHOW_TOP_MARK_ONLY, COVER_UP_MARK_QUANTITY } from '../../constants/game';
+import useGame from '../../hooks/useGame';
+import CoverUpGame, { CoverUpSize, type TCoverUpModeMove } from '../../models/CoverUpGame';
+import { Player } from '../../types/game';
+import Mark, { SIZES } from '../Mark/Mark';
+import type { IBaseProps } from './BaseBox';
 import styles from './CoverUpBox.module.scss';
 
 /**
  * original props
  */
-interface IProps {
-  position: TPosition;
-  onAddMove: (move: TBaseMove) => void;
-}
+interface IProps extends IBaseProps<TCoverUpModeMove> {}
 
 /**
  * component props
@@ -40,9 +29,9 @@ type TComponentProps = React.ComponentPropsWithoutRef<'button'>;
 type TProps = IProps & TComponentProps;
 
 const MARK_SIZES = {
-  [CoverUpSize.Small]: 'sm',
-  [CoverUpSize.Medium]: 'md',
-  [CoverUpSize.Large]: 'lg'
+  [CoverUpSize.Small]: SIZES.Small,
+  [CoverUpSize.Medium]: SIZES.Medium,
+  [CoverUpSize.Large]: SIZES.Large
 } as const;
 
 const CoverUpBox: React.FunctionComponent<TProps> = props => {
@@ -50,17 +39,22 @@ const CoverUpBox: React.FunctionComponent<TProps> = props => {
 
   const { className, disabled, position, onAddMove, ...otherProps } = props;
 
-  const activeMoves = useComputed(() => findActiveMoves(moves.value, position));
-  const activeMove = activeMoves.value[activeMoves.value.length - 1];
-  const [player] = activeMove ?? [];
-  const displayMoves = IS_COVERED_MARKS_DISPLAYED ? activeMoves.value : activeMoves.value.slice(-1);
+  const [game, board] = useGame<CoverUpGame>()!;
+  const { currentPlayer } = game;
+  const { moves } = board;
 
-  const markSizeOptionsMapping = useComputed(() => {
-    const activeMoves = findActiveMoves(moves.value);
-    return activeMoves.reduce(
+  const activeMoves = board.findMoves(position, CoverUpGame.activeMoveFilter);
+  const displayMoves = COVER_UP_IS_SHOW_TOP_MARK_ONLY ? activeMoves.slice(-1) : activeMoves;
+
+  const activeMove = activeMoves[activeMoves.length - 1];
+  const [player] = activeMove ?? [];
+
+  const markSizeOptionsMapping = useMemo(() => {
+    const [moves] = game.state;
+    return moves.reduce(
       (mapping, move) => {
         const [player, , meta] = move;
-        const { size } = meta as TCoverUpModeMoveMeta;
+        const { size } = meta;
         mapping[player][size]![1] -= 1;
         return mapping;
       },
@@ -77,7 +71,7 @@ const CoverUpBox: React.FunctionComponent<TProps> = props => {
         ]
       } as Record<Player, [CoverUpSize, number][]>
     );
-  });
+  }, [game.state]);
 
   const [isSelectionBoxOpened, setIsSelectionBoxOpened] = useState(false);
   const {
@@ -117,18 +111,17 @@ const CoverUpBox: React.FunctionComponent<TProps> = props => {
   const handleClick: Required<React.ComponentProps<typeof Button>>['onClick'] = useCallback(
     event => {
       const { size } = event.currentTarget.dataset;
-      const move: TBaseMove = [
-        currentPlayer.value,
+      const move: TCoverUpModeMove = [
+        currentPlayer.value!,
         position,
         {
-          mode: Mode.CoverUp,
           size: parseInt(size!) as CoverUpSize
         }
       ];
       onAddMove(move);
       setIsSelectionBoxOpened(false);
     },
-    [position, onAddMove]
+    [position, onAddMove, currentPlayer]
   );
 
   return (
@@ -147,7 +140,7 @@ const CoverUpBox: React.FunctionComponent<TProps> = props => {
         >
           {displayMoves.map((move, index) => {
             const [player, , meta] = move;
-            const { size } = meta as TCoverUpModeMoveMeta;
+            const { size } = meta;
             return (
               <div
                 key={`${index}-${size}`}
@@ -177,7 +170,7 @@ const CoverUpBox: React.FunctionComponent<TProps> = props => {
       </PopoverTrigger>
       <PopoverContent>
         <ol className='flex items-center gap-2'>
-          {markSizeOptionsMapping.value[currentPlayer.value].map(([size, quantity]) => (
+          {markSizeOptionsMapping[currentPlayer.value!].map(([size, quantity]) => (
             <li
               key={size}
               className='inline-flex'
@@ -196,7 +189,7 @@ const CoverUpBox: React.FunctionComponent<TProps> = props => {
                 >
                   <Mark
                     size={MARK_SIZES[size]}
-                    player={currentPlayer.value}
+                    player={currentPlayer.value!}
                     bounce={false}
                   />
                 </Button>

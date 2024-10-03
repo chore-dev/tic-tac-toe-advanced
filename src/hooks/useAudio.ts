@@ -2,11 +2,9 @@ import useAsyncEffect from '@gtomato-web/react-hooks/lib/core/useAsyncEffect';
 import { useCallback, useMemo, useState } from 'react';
 
 const useAudio = (src: string) => {
-  // use `AudioContext` to avoid delay in iOS Safari
+  // use `AudioContext` to avoid delay on iOS Safari
   const audioContext = useMemo(() => new AudioContext(), []);
   const [audioBuffer, setAudioBuffer] = useState<AudioBuffer | null>(null);
-
-  const ready = audioBuffer !== null;
 
   const play = useCallback(() => {
     const source = audioContext.createBufferSource();
@@ -22,7 +20,7 @@ const useAudio = (src: string) => {
     setAudioBuffer(audioBuffer);
   }, [src, audioContext]);
 
-  return [ready, play] as const;
+  return [play, audioBuffer] as const;
 };
 
 export default useAudio;

@@ -1,40 +1,43 @@
 import classNames from 'classnames';
 import React, { useMemo } from 'react';
 
-import { createMatrix } from '../../helpers/game';
-import { type TPosition } from '../../store/game';
+import Board from '../../models/Board';
+import type { TAnyMove, TPosition } from '../../types/game';
 import styles from './BaseBoard.module.scss';
+
+export interface ICommonBoardProps<M extends TAnyMove> {
+  board: Board<M>;
+  disabled?: boolean;
+  onAddMove: (move: M) => void;
+}
 
 /**
  * original props
  */
-interface IProps {
-  size: number;
+interface IProps<M extends TAnyMove> extends Pick<ICommonBoardProps<M>, 'board'> {
   children: (position: TPosition) => React.ReactNode;
 }
 
 /**
  * component props
  */
-type TComponentProps = React.ComponentPropsWithoutRef<'table'>;
+type TComponentProps = React.ComponentPropsWithoutRef<'div'>;
 type TOmittedProps = 'children';
 
 /**
  * `BaseBoard` props
  */
-type TProps = IProps & Omit<TComponentProps, TOmittedProps>;
+type TProps<M extends TAnyMove> = IProps<M> & Omit<TComponentProps, TOmittedProps>;
 
-const BaseBoard: React.FunctionComponent<TProps> = props => {
-  const { className, size, children, ...otherProps } = props;
+function BaseBoard<M extends TAnyMove>(props: TProps<M>) {
+  const { className, board, children } = props;
 
-  const matrix = useMemo(() => createMatrix(size), [size]);
+  const matrix = useMemo(() => board.createMatrix(), [board]);
+  const marks = matrix.flat();
 
   return (
-    <div
-      className={classNames(className, styles.board, 'shadow-glow')}
-      {...otherProps}
-    >
-      {matrix.flat().map((position, index) => (
+    <div className={classNames(className, styles.board, 'shadow-glow')}>
+      {marks.map(([, position], index) => (
         <div
           key={index}
           className='flex'
@@ -44,7 +47,7 @@ const BaseBoard: React.FunctionComponent<TProps> = props => {
       ))}
     </div>
   );
-};
+}
 
 BaseBoard.displayName = 'BaseBoard';
 

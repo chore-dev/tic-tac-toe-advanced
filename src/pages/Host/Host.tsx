@@ -1,4 +1,5 @@
 import { Button, CircularProgress } from '@nextui-org/react';
+import classNames from 'classnames';
 import React, { useCallback, useEffect } from 'react';
 import { generatePath, useNavigate } from 'react-router-dom';
 
@@ -7,9 +8,8 @@ import * as peerActions from '../../actions/peer';
 import Typography from '../../components/Typography/Typography';
 import { ROUTES } from '../../constants/routes';
 import { ERRORS } from '../../constants/texts';
-import { bindConnectionEvents, initializePeer } from '../../helpers/peer';
-import { currentPlayer, mode, moves, size } from '../../store/game';
-import { connected, connection, hosted } from '../../store/peer';
+import OnlineGame from '../../models/OnlineGame';
+import { mode, size } from '../../store/game';
 // import styles from './Host.module.scss';
 
 /**
@@ -27,7 +27,7 @@ type TComponentProps = React.ComponentPropsWithoutRef<'main'>;
  */
 type TProps = IProps & TComponentProps;
 
-const Host: React.FunctionComponent<TProps> = props => {
+const Host: React.FunctionComponent<TProps> = (props) => {
   const { className, ...otherProps } = props;
 
   const navigate = useNavigate();
@@ -37,46 +37,43 @@ const Host: React.FunctionComponent<TProps> = props => {
   }, [navigate]);
 
   useEffect(() => {
-    const _peer = initializePeer();
-    _peer.on('open', id => {
-      hosted.value = true;
+    const onlineGame = OnlineGame.init(true);
+    const peer = onlineGame.initPeer();
+    peer.on('open', (id) => {
       const path = generatePath(ROUTES.PlayOnline, { id });
       navigate(path, { replace: true });
     });
-    _peer.on('connection', _connection => {
-      if (!connection.value) {
-        connection.value = _connection;
-        _connection.on('open', () => {
-          connected.value = true;
-          _connection.send(
-            gameActions.init(size.value, mode.value, moves.value, currentPlayer.value)
+    peer.on('connection', (connection) => {
+      if (!onlineGame.connection.value) {
+        connection.on('open', () => {
+          const game = onlineGame.initGame(mode.value, size.value);
+          const { board, currentPlayer } = game;
+          const { moves } = board;
+          connection.send(
+            gameActions.init(mode.value, size.value, moves.value, currentPlayer.value!),
           );
-          bindConnectionEvents(_connection);
+          onlineGame.bind(connection);
         });
-        _connection.on('close', () => {
-          connection.value = null;
-          connected.value = false;
+        connection.on('close', () => {
+          onlineGame.connection.value = null;
+          onlineGame.connected.value = false;
         });
-      } else {
-        _connection.on('open', () => {
-          _connection.send(peerActions.error(ERRORS.GameInProgress));
-        });
+        return;
       }
+      // someone has already connected to the host
+      connection.on('open', () => {
+        connection.send(peerActions.error(ERRORS.GameInProgress));
+      });
     });
   }, [navigate]);
 
   return (
-    <main
-      className={className}
-      {...otherProps}
-    >
-      <div className='flex flex-col items-center gap-4'>
-        <div className='flex items-center gap-4'>
-          <Typography variant='title2'>Loading...</Typography>
-          <CircularProgress size='sm' />
-        </div>
-        <Button onClick={handleCancelButtonClick}>Cancel</Button>
+    <main className={classNames(className, 'flex flex-col items-center gap-4')} {...otherProps}>
+      <div className="flex items-center gap-4">
+        <Typography variant="title2">Loading...</Typography>
+        <CircularProgress size="sm" />
       </div>
+      <Button onClick={handleCancelButtonClick}>Cancel</Button>
     </main>
   );
 };

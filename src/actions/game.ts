@@ -1,52 +1,53 @@
-import type { Mode, TMove } from '../store/game';
-import type { Player } from './../store/game';
+import type { Mode, Player, TAnyMove } from '../types/game';
 
 /** init game config with the host */
-type TGameInitData = {
+export type TGameInitData = {
   type: 'game:init';
   payload: {
-    size: number;
     mode: Mode;
-    moves: TMove[];
+    size: number;
+    moves: TAnyMove[];
     currentPlayer: Player;
   };
 };
 
-type TGameAddMoveData = {
+export type TGameAddMoveData = {
   type: 'game:addMove';
   payload: {
-    move: TMove;
+    move: TAnyMove;
   };
 };
 
-type TGameResetData = {
+export type TGameResetData = {
   type: 'game:reset';
+  payload: {};
 };
 
 export type TConnectionGameData = TGameInitData | TGameAddMoveData | TGameResetData;
 
 export const init = (
-  size: number,
   mode: Mode,
-  moves: TMove[],
-  currentPlayer: Player
+  size: number,
+  moves: TAnyMove[],
+  currentPlayer: Player,
 ): TGameInitData => ({
   type: 'game:init',
   payload: {
-    size,
     mode,
+    size,
     moves,
-    currentPlayer
-  }
+    currentPlayer,
+  },
 });
 
-export const addMove = (move: TMove): TGameAddMoveData => ({
+export const addMove = (move: TAnyMove): TGameAddMoveData => ({
   type: 'game:addMove',
   payload: {
-    move
-  }
+    move,
+  },
 });
 
 export const reset = (): TConnectionGameData => ({
-  type: 'game:reset'
+  type: 'game:reset',
+  payload: {},
 });

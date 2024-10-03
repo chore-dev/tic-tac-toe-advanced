@@ -1,26 +1,18 @@
-import { useComputed } from '@preact/signals-react';
 import classNames from 'classnames';
 import React, { useCallback } from 'react';
+import useGame from '../../hooks/useGame';
 
-import {
-  currentPlayer,
-  InfiniteMoveStatus,
-  Mode,
-  moves,
-  type TBaseMove,
-  type TInfiniteModeMoveMeta,
-  type TPosition
-} from '../../store/game';
+import type InfiniteGame from '../../models/InfiniteGame';
+import type { TInfiniteModeMove, TInfiniteModeMoveMeta } from '../../models/InfiniteGame';
+import { InfiniteMoveStatus } from '../../models/InfiniteGame';
 import Mark from '../Mark/Mark';
+import type { IBaseProps } from './BaseBox';
 import styles from './InfiniteBox.module.scss';
 
 /**
  * original props
  */
-interface IProps {
-  position: TPosition;
-  onAddMove: (move: TBaseMove) => void;
-}
+interface IProps extends IBaseProps<TInfiniteModeMove> {}
 
 /**
  * component props
@@ -35,43 +27,44 @@ type TProps = IProps & TComponentProps;
 const InfiniteBox: React.FunctionComponent<TProps> = props => {
   const { className, disabled, position, onAddMove, ...otherProps } = props;
 
-  const move = useComputed(() =>
-    moves.value.find(([, [x, y], meta]) => {
-      const { status } = meta as TInfiniteModeMoveMeta;
-      return x === position[0] && y === position[1] && status !== InfiniteMoveStatus.Removed;
-    })
-  );
+  const [game, board] = useGame<InfiniteGame>()!;
+  const { currentPlayer } = game;
+  const { moves } = board;
 
-  const [player, , meta] = move.value ?? [];
+  const move = moves.value.find(([, [x, y], meta]) => {
+    const { status } = meta;
+    return x === position[0] && y === position[1] && status !== InfiniteMoveStatus.Removed;
+  });
+
+  const [player, , meta] = move ?? [];
   const { status } = (meta ?? {}) as Partial<TInfiniteModeMoveMeta>;
 
   const handleClick = useCallback(() => {
-    if (!move.value) {
-      const move: TBaseMove = [
-        currentPlayer.value,
+    if (!move) {
+      const move: TInfiniteModeMove = [
+        currentPlayer.value!,
         position,
         {
-          mode: Mode.Infinite,
           status: InfiniteMoveStatus.None
         }
       ];
       onAddMove(move);
     }
-  }, [position, onAddMove, move]);
+  }, [position, onAddMove, currentPlayer, move]);
 
   return (
     <button
       className={classNames(className, {
         [styles.pulse!]: status === InfiniteMoveStatus.RemovingSoon
       })}
-      disabled={disabled || !!move.value}
+      disabled={disabled || !!move}
       onClick={handleClick}
       {...otherProps}
     >
-      {typeof player !== 'undefined' && status !== InfiniteMoveStatus.Removed && (
+      {player && status !== InfiniteMoveStatus.Removed && (
         <Mark
           player={player}
-          active={move.value === moves.value[moves.value.length - 1]}
+          active={move === moves.value[moves.value.length - 1]}
         />
       )}
     </button>

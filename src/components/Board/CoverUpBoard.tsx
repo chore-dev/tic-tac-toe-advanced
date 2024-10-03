@@ -1,31 +1,23 @@
 import { DndContext } from '@dnd-kit/core';
 import React, { useCallback } from 'react';
 
-import { findActiveMove } from '../../helpers/game';
-import {
-  currentPlayer,
-  Mode,
-  moves,
-  type TBaseMove,
-  type TCoverUpModeMoveMeta,
-  type TPosition
-} from '../../store/game';
+import useGame from '../../hooks/useGame';
+import CoverUpGame from '../../models/CoverUpGame';
+import type { TCoverUpModeMove, TCoverUpModeMoveMeta } from '../../models/CoverUpGame';
+import type { TPosition } from '../../types/game';
 import CoverUpBox from '../Box/CoverUpBox';
-import BaseBoard from './BaseBoard';
+import BaseBoard, { ICommonBoardProps } from './BaseBoard';
 // import styles from './CoverUpBoard.module.scss';
 
 /**
  * original props
  */
-interface IProps {
-  disabled?: boolean;
-  onAddMove: (move: TBaseMove) => void;
-}
+interface IProps extends ICommonBoardProps<TCoverUpModeMove> {}
 
 /**
  * component props
  */
-type TComponentProps = React.ComponentPropsWithoutRef<typeof BaseBoard>;
+type TComponentProps = React.ComponentPropsWithoutRef<'div'>;
 type TOmittedProps = 'children';
 
 /**
@@ -38,7 +30,10 @@ type TDragEndEventData = {
 };
 
 const CoverUpBoard: React.FunctionComponent<TProps> = props => {
-  const { disabled, onAddMove, ...otherProps } = props;
+  const { board, disabled, onAddMove, ...otherProps } = props;
+
+  const [game] = useGame<CoverUpGame>()!;
+  const { currentPlayer } = game;
 
   const handleDragEnd: Required<React.ComponentProps<typeof DndContext>>['onDragEnd'] = useCallback(
     event => {
@@ -47,19 +42,19 @@ const CoverUpBoard: React.FunctionComponent<TProps> = props => {
       const { position: overPosition } = (over?.data.current ?? {}) as TDragEndEventData;
       if (activePosition && overPosition) {
         if (activePosition.join() !== overPosition.join()) {
-          const activeMove = findActiveMove(moves.value, activePosition);
+          const activeMove = board.findMove(activePosition, CoverUpGame.activeMoveFilter);
           if (activeMove) {
-            const overMove = findActiveMove(moves.value, overPosition);
+            const overMove = board.findMove(overPosition, CoverUpGame.activeMoveFilter);
             const [, , activeMoveMeta] = activeMove;
             const [, , overMoveMeta] = overMove ?? [];
             const activeMoveSize = (activeMoveMeta as TCoverUpModeMoveMeta).size;
             const overMoveSize = (overMoveMeta as TCoverUpModeMoveMeta)?.size ?? -1;
             if (activeMoveSize > overMoveSize) {
-              const move: TBaseMove = [
-                currentPlayer.value,
+              const move: TCoverUpModeMove = [
+                currentPlayer.value!,
                 overPosition,
                 {
-                  mode: Mode.CoverUp,
+                  id: -1,
                   size: activeMoveSize,
                   from: activeMoveMeta.id
                 }
@@ -70,14 +65,14 @@ const CoverUpBoard: React.FunctionComponent<TProps> = props => {
         }
       }
     },
-    [onAddMove]
+    [board, onAddMove, currentPlayer]
   );
 
   const handleAddMove: React.ComponentProps<typeof CoverUpBox>['onAddMove'] = useCallback(
     move => {
       // check if the move is valid
       const [, position, meta] = move;
-      const activeMove = findActiveMove(moves.value, position);
+      const activeMove = board.findMove(position, CoverUpGame.activeMoveFilter);
       if (activeMove) {
         const { size } = meta as TCoverUpModeMoveMeta;
         const [, , activeMoveMeta] = activeMove;
@@ -90,12 +85,15 @@ const CoverUpBoard: React.FunctionComponent<TProps> = props => {
       }
       onAddMove(move);
     },
-    [onAddMove]
+    [board, onAddMove]
   );
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
-      <BaseBoard {...otherProps}>
+      <BaseBoard
+        board={board}
+        {...otherProps}
+      >
         {position => (
           <CoverUpBox
             className='size-24'

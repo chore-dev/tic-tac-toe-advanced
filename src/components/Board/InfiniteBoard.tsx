@@ -1,22 +1,19 @@
 import React from 'react';
 
-import type { TBaseMove } from '../../store/game';
+import type { TInfiniteModeMove } from '../../models/InfiniteGame';
 import InfiniteBox from '../Box/InfiniteBox';
-import BaseBoard from './BaseBoard';
+import BaseBoard, { ICommonBoardProps } from './BaseBoard';
 // import styles from './InfiniteBoard.module.scss';
 
 /**
  * original props
  */
-interface IProps {
-  disabled?: boolean;
-  onAddMove: (move: TBaseMove) => void;
-}
+interface IProps extends ICommonBoardProps<TInfiniteModeMove> {}
 
 /**
  * component props
  */
-type TComponentProps = React.ComponentPropsWithoutRef<typeof BaseBoard>;
+type TComponentProps = React.ComponentPropsWithoutRef<'div'>;
 type TOmittedProps = 'children';
 
 /**
@@ -25,9 +22,12 @@ type TOmittedProps = 'children';
 type TProps = IProps & Omit<TComponentProps, TOmittedProps>;
 
 const InfiniteBoard: React.FunctionComponent<TProps> = props => {
-  const { disabled, onAddMove, ...otherProps } = props;
+  const { board, disabled, onAddMove, ...otherProps } = props;
   return (
-    <BaseBoard {...otherProps}>
+    <BaseBoard
+      board={board}
+      {...otherProps}
+    >
       {position => (
         <InfiniteBox
           className='size-24'
