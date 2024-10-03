@@ -21,6 +21,7 @@ abstract class BaseGame<M extends TAnyMove> {
     this.board = new Board(size);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   static activeMoveFilter = (move: TAnyMove, index: number, moves: TAnyMove[]) => {
     // to be overridden
     return true;

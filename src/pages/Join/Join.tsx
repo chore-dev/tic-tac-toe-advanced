@@ -14,7 +14,7 @@ interface IProps {}
 /**
  * component props
  */
-type TComponentProps = {};
+type TComponentProps = Record<string, never>;
 
 /**
  * `Join` props

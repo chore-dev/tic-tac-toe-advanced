@@ -27,6 +27,7 @@ export type TMove<TMoveMeta extends object> = [
   meta: TMoveMeta & TBaseMoveMeta
 ];
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type TAnyMove = TMove<any>;
 
 export type TMark = [player: Player | null, position: TPosition];

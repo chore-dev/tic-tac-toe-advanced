@@ -1,7 +1,7 @@
 import { Mode, type TMove } from '../types/game';
 import BaseGame from './BaseGame';
 
-export type TClassicModeMoveMeta = {};
+export type TClassicModeMoveMeta = Record<string, never>;
 export type TClassicModeMove = TMove<TClassicModeMoveMeta>;
 
 class ClassicGame extends BaseGame<TClassicModeMove> {

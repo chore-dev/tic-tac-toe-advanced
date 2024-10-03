@@ -20,7 +20,7 @@ export type TGameAddMoveData = {
 
 export type TGameResetData = {
   type: 'game:reset';
-  payload: {};
+  payload: Record<string, never>;
 };
 
 export type TConnectionGameData = TGameInitData | TGameAddMoveData | TGameResetData;

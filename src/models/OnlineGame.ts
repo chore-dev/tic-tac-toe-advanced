@@ -99,6 +99,7 @@ class OnlineGame {
     this.game?.addMove(move);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private handleGameReset = (payload: TGameResetData['payload']) => {
     this.game?.reset();
   };
