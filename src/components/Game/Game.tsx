@@ -3,7 +3,6 @@ import { faRotateRight } from '@fortawesome/free-solid-svg-icons/faRotateRight';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Chip } from '@nextui-org/react';
 import { useSignalEffect } from '@preact/signals-react';
-import { useSignals } from '@preact/signals-react/runtime';
 import classNames from 'classnames';
 import React, { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -51,11 +50,10 @@ type THandleAddMove = React.ComponentProps<typeof ClassicBoard>['onAddMove'] &
 const BOARD_COMPONENTS = {
   [Mode.Classic]: ClassicBoard,
   [Mode.CoverUp]: CoverUpBoard,
-  [Mode.Infinite]: InfiniteBoard,
+  [Mode.Infinite]: InfiniteBoard
 } as const;
 
-const Game: React.FunctionComponent<TProps> = (props) => {
-  useSignals();
+const Game: React.FunctionComponent<TProps> = props => {
   const { className, me, hosted, connected, disabled, onAddMove, onReset, ...otherProps } = props;
 
   const [game, board] = useGame()!;
@@ -72,13 +70,13 @@ const Game: React.FunctionComponent<TProps> = (props) => {
   const Board = BOARD_COMPONENTS[mode];
 
   const handleAddMove: THandleAddMove = useCallback(
-    (move) => {
+    move => {
       if (!_disabled && !winner.value) {
         const _move = game.addMove(move as TAnyMove);
         onAddMove?.(_move);
       }
     },
-    [game, winner, _disabled, onAddMove],
+    [game, winner, _disabled, onAddMove]
   );
 
   const handleBackButtonClick = useCallback(() => {
@@ -115,9 +113,12 @@ const Game: React.FunctionComponent<TProps> = (props) => {
   }, [game]);
 
   return (
-    <div className={classNames(className, 'flex flex-col items-center gap-4')} {...otherProps}>
-      <section className="flex flex-col items-center gap-4">
-        <div className="flex items-center gap-4">
+    <div
+      className={classNames(className, 'flex flex-col items-center gap-4')}
+      {...otherProps}
+    >
+      <section className='flex flex-col items-center gap-4'>
+        <div className='flex items-center gap-4'>
           <PlayerBox
             me={me}
             player={Player.O}
@@ -133,10 +134,10 @@ const Game: React.FunctionComponent<TProps> = (props) => {
           />
         </div>
       </section>
-      <div className="relative flex justify-center">
+      <div className='relative flex justify-center'>
         <Board
           className={classNames('transition-opacity duration-500 ease-out', {
-            'opacity-30': !!winner.value,
+            'opacity-30': !!winner.value
           })}
           board={board as Board<TAnyMove>}
           disabled={_disabled}
@@ -145,16 +146,26 @@ const Game: React.FunctionComponent<TProps> = (props) => {
         {!!winner.value && (!connected || hosted) && (
           <div className={classNames('flex items-center gap-4', 'absolute-center')}>
             <Button
-              size="lg"
-              startContent={<FontAwesomeIcon size="2x" icon={faCircleArrowLeft} />}
+              size='lg'
+              startContent={
+                <FontAwesomeIcon
+                  size='2x'
+                  icon={faCircleArrowLeft}
+                />
+              }
               onClick={handleBackButtonClick}
             >
               Back
             </Button>
             <Button
-              size="lg"
-              color="primary"
-              startContent={<FontAwesomeIcon size="2x" icon={faRotateRight} />}
+              size='lg'
+              color='primary'
+              startContent={
+                <FontAwesomeIcon
+                  size='2x'
+                  icon={faRotateRight}
+                />
+              }
               onClick={handleResetButtonClick}
             >
               Again
@@ -162,7 +173,10 @@ const Game: React.FunctionComponent<TProps> = (props) => {
           </div>
         )}
       </div>
-      <Chip color="primary" size="lg">
+      <Chip
+        color='primary'
+        size='lg'
+      >
         {MODES[mode]}
       </Chip>
     </div>

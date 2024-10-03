@@ -29,6 +29,7 @@ const ClassicBox: React.FunctionComponent<TProps> = props => {
   const { currentPlayer } = game;
   const { moves } = board;
 
+  // TODO optimization
   const move = moves.value.find(([, [x, y]]) => x === position[0] && y === position[1]);
 
   const [player] = move ?? [];

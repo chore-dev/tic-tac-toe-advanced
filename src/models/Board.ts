@@ -7,6 +7,7 @@ class Board<M extends TAnyMove> {
 
   constructor(public size: number) {}
 
+  /** create an empty 2D board */
   createMatrix() {
     const { size } = this;
     return Array.from({ length: size }).map((_, x) =>

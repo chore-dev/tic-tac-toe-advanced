@@ -1,7 +1,6 @@
 import { useDraggable, useDroppable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { Badge, Button, Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react';
-import { useSignals } from '@preact/signals-react/runtime';
 import classNames from 'classnames';
 import React, { useCallback, useMemo, useState } from 'react';
 
@@ -35,8 +34,6 @@ const MARK_SIZES = {
 } as const;
 
 const CoverUpBox: React.FunctionComponent<TProps> = props => {
-  useSignals();
-
   const { className, disabled, position, onAddMove, ...otherProps } = props;
 
   const [game, board] = useGame<CoverUpGame>()!;
@@ -49,29 +46,28 @@ const CoverUpBox: React.FunctionComponent<TProps> = props => {
   const activeMove = activeMoves[activeMoves.length - 1];
   const [player] = activeMove ?? [];
 
-  const markSizeOptionsMapping = useMemo(() => {
-    const [moves] = game.state;
-    return moves.reduce(
-      (mapping, move) => {
-        const [player, , meta] = move;
-        const { size } = meta;
-        mapping[player][size]![1] -= 1;
-        return mapping;
-      },
-      {
-        [Player.O]: [
-          [CoverUpSize.Small, COVER_UP_MARK_QUANTITY],
-          [CoverUpSize.Medium, COVER_UP_MARK_QUANTITY],
-          [CoverUpSize.Large, COVER_UP_MARK_QUANTITY]
-        ],
-        [Player.X]: [
-          [CoverUpSize.Small, COVER_UP_MARK_QUANTITY],
-          [CoverUpSize.Medium, COVER_UP_MARK_QUANTITY],
-          [CoverUpSize.Large, COVER_UP_MARK_QUANTITY]
-        ]
-      } as Record<Player, [CoverUpSize, number][]>
-    );
-  }, [game.state]);
+  // TODO optimization
+  const [_moves] = game.state;
+  const markSizeOptionsMapping = _moves.reduce(
+    (mapping, move) => {
+      const [player, , meta] = move;
+      const { size } = meta;
+      mapping[player][size]![1] -= 1;
+      return mapping;
+    },
+    {
+      [Player.O]: [
+        [CoverUpSize.Small, COVER_UP_MARK_QUANTITY],
+        [CoverUpSize.Medium, COVER_UP_MARK_QUANTITY],
+        [CoverUpSize.Large, COVER_UP_MARK_QUANTITY]
+      ],
+      [Player.X]: [
+        [CoverUpSize.Small, COVER_UP_MARK_QUANTITY],
+        [CoverUpSize.Medium, COVER_UP_MARK_QUANTITY],
+        [CoverUpSize.Large, COVER_UP_MARK_QUANTITY]
+      ]
+    } as Record<Player, [CoverUpSize, number][]>
+  );
 
   const [isSelectionBoxOpened, setIsSelectionBoxOpened] = useState(false);
   const {

@@ -31,6 +31,7 @@ const InfiniteBox: React.FunctionComponent<TProps> = props => {
   const { currentPlayer } = game;
   const { moves } = board;
 
+  // TODO optimization
   const move = moves.value.find(([, [x, y], meta]) => {
     const { status } = meta;
     return x === position[0] && y === position[1] && status !== InfiniteMoveStatus.Removed;
